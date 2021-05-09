@@ -1,2 +1,3 @@
 # blueprints
-Text-based structures for Minecraft.
+
+> Text-based structures for Minecraft.
