@@ -68,7 +68,7 @@ class BlueprintsBuildContext:
     material_cache_size: int = DEFAULT_MATERIAL_CACHE_SIZE
 
     generated_namespace: Optional[str] = None
-    generated_prefix: Optional[Tuple[str, ...]] = None
+    generated_prefix_parts: Optional[Tuple[str, ...]] = None
 
     generated_structures_registry: str = DEFAULT_GENERATED_STRUCTURES_REGISTRY
 
@@ -140,8 +140,8 @@ class BlueprintsBuildContext:
         # Create and register transformers, if they do not already exist.
         if self.blueprint_transformer is DEFAULT:
             self.blueprint_transformer = BlueprintTransformer(
-                output_namespace=self.generated_namespace,
-                output_parts=self.generated_prefix,
+                generated_namespace=self.generated_namespace,
+                generated_prefix_parts=self.generated_prefix_parts,
             )
         self.transformers[Blueprint] = self.blueprint_transformer
         # Create and register dumpers, if they do not already exist.

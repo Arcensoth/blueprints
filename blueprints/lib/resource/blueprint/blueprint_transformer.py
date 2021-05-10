@@ -53,16 +53,14 @@ class BlueprintTransformer:
     ----------
     structure_serializer
         The structure serializer to use, including data version.
-    output_namespace
-        The namespace to place structures under, if different from the blueprint.
-    output_parts
-        Additional parent directories to place structures under, if any. Note that the
-        latter portion of a structure's path will always correspond to the blueprint's
-        original path.
+    generated_namespace
+        A separate namespace to use for generated resources.
+    generated_prefix_parts
+        A prefix to apply to the locations of generated resources.
     """
 
-    output_namespace: Optional[str] = None
-    output_parts: Optional[Tuple[str, ...]] = None
+    generated_namespace: Optional[str] = None
+    generated_prefix_parts: Optional[Tuple[str, ...]] = None
 
     # @implements ResourceTransformer
     def __call__(
@@ -176,9 +174,9 @@ class BlueprintTransformer:
 
     def to_structure_location(self, location: ResourceLocation) -> StructureLocation:
         # Map the blueprint location to a structure location.
-        namespace = Namespace(name=self.output_namespace or location.namespace.name)
+        namespace = Namespace(name=self.generated_namespace or location.namespace.name)
         parts = location.parts
-        if self.output_parts:
-            parts = (*self.output_parts, *parts)
+        if self.generated_prefix_parts:
+            parts = (*self.generated_prefix_parts, *parts)
         structure_location = ResourceLocation(namespace, parts)
         return Structure @ structure_location

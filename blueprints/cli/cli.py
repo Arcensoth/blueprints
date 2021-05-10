@@ -107,14 +107,14 @@ def cli(log: str, detailed_logs: bool):
     "--generated_namespace",
     "generated_namespace",
     type=str,
-    help="The namespace to use for generated output.",
+    help="A separate namespace to use for generated resources.",
 )
 @click.option(
     "--generated_prefix",
     "generated_prefix",
     type=str,
     callback=lambda ctx, param, value: value.split("/") if value else None,
-    help="The root location to use for generated output.",
+    help="A prefix to apply to the locations of generated resources.",
 )
 @click.option(
     "--generated_structures_registry",
