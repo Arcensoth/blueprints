@@ -67,12 +67,12 @@ class BlueprintsBuildContext:
     blueprint_cache_size: int = DEFAULT_BLUEPRINT_CACHE_SIZE
     material_cache_size: int = DEFAULT_MATERIAL_CACHE_SIZE
 
-    generated_namespace: Optional[str] = None
-    generated_prefix_parts: Optional[Tuple[str, ...]] = None
-
     generated_structures_registry: str = DEFAULT_GENERATED_STRUCTURES_REGISTRY
 
-    log: Logger = field(init=False, default=DEFAULT)
+    generated_namespace: Optional[str] = None
+    generated_prefix: Optional[str] = None
+
+    log: Logger = field(default=DEFAULT)
 
     blueprint_cache: ResourceCache[Blueprint] = field(default=DEFAULT)
     material_cache: ResourceCache[Material] = field(default=DEFAULT)
@@ -82,6 +82,12 @@ class BlueprintsBuildContext:
 
     material_loader: JsonResourceLoader[Material] = field(default=DEFAULT)
     blueprint_loader: JsonResourceLoader[Blueprint] = field(default=DEFAULT)
+
+    blueprints_registry_parts: Tuple[str, ...] = field(init=False)
+    materials_registry_parts: Tuple[str, ...] = field(init=False)
+    generated_structures_registry_parts: Tuple[str, ...] = field(init=False)
+
+    generated_prefix_parts: Optional[Tuple[str, ...]] = field(init=False)
 
     transformers: ResourceTransformerSet = field(
         init=False, default_factory=lambda: ResourceTransformerSet()
@@ -109,6 +115,15 @@ class BlueprintsBuildContext:
         # Create a logger, if one does not already exist.
         if self.log is DEFAULT:
             self.log = getLogger(f"{self}")
+        # Split paths into parts.
+        self.blueprints_registry_parts = tuple(self.blueprints_registry.split("/"))
+        self.materials_registry_parts = tuple(self.materials_registry.split("/"))
+        self.generated_structures_registry_parts = tuple(
+            self.generated_structures_registry.split("/")
+        )
+        self.generated_prefix_parts = (
+            tuple(self.generated_prefix.split("/")) if self.generated_prefix else None
+        )
         # Create caches, do not already exist. Note that a cache size of 0 would result
         # in a useless cache
         if self.blueprint_cache is DEFAULT:
@@ -153,18 +168,6 @@ class BlueprintsBuildContext:
         self.dumpers[Structure] = self.structure_dumper
         # Create a representation of the input pack.
         self.input_pack = PhysicalPack(self.input_path)
-
-    @property
-    def blueprints_registry_parts(self) -> Tuple[str, ...]:
-        return tuple(self.blueprints_registry.split("/"))
-
-    @property
-    def materials_registry_parts(self) -> Tuple[str, ...]:
-        return tuple(self.materials_registry.split("/"))
-
-    @property
-    def structures_registry_parts(self) -> Tuple[str, ...]:
-        return tuple(self.generated_structures_registry.split("/"))
 
     async def build(self):
         self.log.info(f"Reading from: {self.input_path}")
@@ -248,7 +251,7 @@ class BlueprintsBuildContext:
         structure_location_resolver = CommonResourceLocationResolver(
             PhysicalRegistryLocation(
                 namespace=blueprints_registry.namespace,
-                parts=self.structures_registry_parts,
+                parts=self.generated_structures_registry_parts,
             )
         )
         # Create and register resolvers.

@@ -104,6 +104,13 @@ def cli(log: str, detailed_logs: bool):
     + f" Defaults to: {DEFAULT_MATERIAL_CACHE_SIZE}",
 )
 @click.option(
+    "--generated_structures_registry",
+    "generated_structures_registry",
+    type=str,
+    help="The registry where vanilla structures are located."
+    + f" Defaults to: {DEFAULT_GENERATED_STRUCTURES_REGISTRY}",
+)
+@click.option(
     "--generated_namespace",
     "generated_namespace",
     type=str,
@@ -113,15 +120,7 @@ def cli(log: str, detailed_logs: bool):
     "--generated_prefix",
     "generated_prefix",
     type=str,
-    callback=lambda ctx, param, value: value.split("/") if value else None,
     help="A prefix to apply to the locations of generated resources.",
-)
-@click.option(
-    "--generated_structures_registry",
-    "generated_structures_registry",
-    type=str,
-    help="The registry where vanilla structures are located."
-    + f" Defaults to: {DEFAULT_GENERATED_STRUCTURES_REGISTRY}",
 )
 @asyncify
 async def cli_build(**kwargs: Any):
