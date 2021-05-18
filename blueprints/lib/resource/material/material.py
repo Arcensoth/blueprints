@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from pyckaxe.lib import Block, BlockState, NbtCompound, Resource
+from pyckaxe import Block, BlockState, NbtCompound, Resource
 
 __all__ = ("Material",)
 

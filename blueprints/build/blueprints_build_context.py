@@ -32,6 +32,8 @@ from blueprints.lib import (
     Blueprint,
     BlueprintDeserializer,
     BlueprintTransformer,
+    Filter,
+    FilterDeserializer,
     Material,
     MaterialDeserializer,
 )
@@ -42,9 +44,11 @@ __all__ = ("BlueprintsBuildContext",)
 DEFAULT = cast(Any, ...)
 
 DEFAULT_BLUEPRINTS_REGISTRY = "blueprints"
+DEFAULT_FILTERS_REGISTRY = "filters"
 DEFAULT_MATERIALS_REGISTRY = "materials"
 
 DEFAULT_BLUEPRINT_CACHE_SIZE = 1000
+DEFAULT_FILTER_CACHE_SIZE = 1000
 DEFAULT_MATERIAL_CACHE_SIZE = 1000
 
 DEFAULT_MATCH_FILES = "[!!]*"
@@ -62,9 +66,11 @@ class BlueprintsBuildContext:
     match_files: str = DEFAULT_MATCH_FILES
 
     blueprints_registry: str = DEFAULT_BLUEPRINTS_REGISTRY
+    filters_registry: str = DEFAULT_FILTERS_REGISTRY
     materials_registry: str = DEFAULT_MATERIALS_REGISTRY
 
     blueprint_cache_size: int = DEFAULT_BLUEPRINT_CACHE_SIZE
+    filter_cache_size: int = DEFAULT_FILTER_CACHE_SIZE
     material_cache_size: int = DEFAULT_MATERIAL_CACHE_SIZE
 
     generated_structures_registry: str = DEFAULT_GENERATED_STRUCTURES_REGISTRY
@@ -75,15 +81,19 @@ class BlueprintsBuildContext:
     log: Logger = field(default=DEFAULT)
 
     blueprint_cache: ResourceCache[Blueprint] = field(default=DEFAULT)
+    filter_cache: ResourceCache[Filter] = field(default=DEFAULT)
     material_cache: ResourceCache[Material] = field(default=DEFAULT)
 
-    material_deserializer: MaterialDeserializer = field(default=DEFAULT)
     blueprint_deserializer: BlueprintDeserializer = field(default=DEFAULT)
+    filter_deserializer: FilterDeserializer = field(default=DEFAULT)
+    material_deserializer: MaterialDeserializer = field(default=DEFAULT)
 
     material_loader: JsonResourceLoader[Material] = field(default=DEFAULT)
+    filter_loader: JsonResourceLoader[Filter] = field(default=DEFAULT)
     blueprint_loader: JsonResourceLoader[Blueprint] = field(default=DEFAULT)
 
     blueprints_registry_parts: Tuple[str, ...] = field(init=False)
+    filters_registry_parts: Tuple[str, ...] = field(init=False)
     materials_registry_parts: Tuple[str, ...] = field(init=False)
     generated_structures_registry_parts: Tuple[str, ...] = field(init=False)
 
@@ -117,6 +127,7 @@ class BlueprintsBuildContext:
             self.log = getLogger(f"{self}")
         # Split paths into parts.
         self.blueprints_registry_parts = tuple(self.blueprints_registry.split("/"))
+        self.filters_registry_parts = tuple(self.filters_registry.split("/"))
         self.materials_registry_parts = tuple(self.materials_registry.split("/"))
         self.generated_structures_registry_parts = tuple(
             self.generated_structures_registry.split("/")
@@ -124,8 +135,7 @@ class BlueprintsBuildContext:
         self.generated_prefix_parts = (
             tuple(self.generated_prefix.split("/")) if self.generated_prefix else None
         )
-        # Create caches, do not already exist. Note that a cache size of 0 would result
-        # in a useless cache
+        # Create caches that do not already exist.
         if self.blueprint_cache is DEFAULT:
             if self.blueprint_cache_size > 0:
                 self.blueprint_cache = LRUResourceCache(size=self.blueprint_cache_size)
@@ -133,6 +143,13 @@ class BlueprintsBuildContext:
                 self.blueprint_cache = StaticResourceCache()
             else:
                 self.blueprint_cache = UnboundedResourceCache()
+        if self.filter_cache is DEFAULT:
+            if self.filter_cache_size > 0:
+                self.filter_cache = LRUResourceCache(size=self.filter_cache_size)
+            elif self.filter_cache_size == 0:
+                self.filter_cache = StaticResourceCache()
+            else:
+                self.filter_cache = UnboundedResourceCache()
         if self.material_cache is DEFAULT:
             if self.material_cache_size > 0:
                 self.material_cache = LRUResourceCache(size=self.material_cache_size)
@@ -140,26 +157,33 @@ class BlueprintsBuildContext:
                 self.material_cache = StaticResourceCache()
             else:
                 self.material_cache = UnboundedResourceCache()
-        # Create serializers, if they do no already exist.
+        # Create serializers that do no already exist.
         if self.material_deserializer is DEFAULT:
             self.material_deserializer = MaterialDeserializer()
-        if self.blueprint_deserializer is DEFAULT:
-            self.blueprint_deserializer = BlueprintDeserializer(
+        if self.filter_deserializer is DEFAULT:
+            self.filter_deserializer = FilterDeserializer(
                 material_deserializer=self.material_deserializer,
             )
-        # Create loaders, if they do not already exist.
-        if self.material_loader is DEFAULT:
-            self.material_loader = JsonResourceLoader(self.material_deserializer)
+        if self.blueprint_deserializer is DEFAULT:
+            self.blueprint_deserializer = BlueprintDeserializer(
+                filter_deserializer=self.filter_deserializer,
+                material_deserializer=self.material_deserializer,
+            )
+        # Create loaders that do not already exist.
         if self.blueprint_loader is DEFAULT:
             self.blueprint_loader = JsonResourceLoader(self.blueprint_deserializer)
-        # Create and register transformers, if they do not already exist.
+        if self.filter_loader is DEFAULT:
+            self.filter_loader = JsonResourceLoader(self.filter_deserializer)
+        if self.material_loader is DEFAULT:
+            self.material_loader = JsonResourceLoader(self.material_deserializer)
+        # Create and register transformers that do not already exist.
         if self.blueprint_transformer is DEFAULT:
             self.blueprint_transformer = BlueprintTransformer(
                 generated_namespace=self.generated_namespace,
                 generated_prefix_parts=self.generated_prefix_parts,
             )
         self.transformers[Blueprint] = self.blueprint_transformer
-        # Create and register dumpers, if they do not already exist.
+        # Create and register dumpers that do not already exist.
         if self.structure_dumper is DEFAULT:
             self.structure_dumper = NbtResourceDumper(
                 serializer=StructureSerializer(data_version=self.data_version),
@@ -222,6 +246,11 @@ class BlueprintsBuildContext:
             )
         )
         self.log.info(
+            "Number of blueprint filters cached: "
+            + f"{len(self.filter_cache)}"
+            + (f" / {self.filter_cache_size}" if self.filter_cache_size >= 0 else "")
+        )
+        self.log.info(
             "Number of materials cached: "
             + f"{len(self.material_cache)}"
             + (
@@ -242,6 +271,12 @@ class BlueprintsBuildContext:
         blueprint_location_resolver = CommonResourceLocationResolver(
             blueprints_registry
         )
+        filter_location_resolver = CommonResourceLocationResolver(
+            PhysicalRegistryLocation(
+                namespace=blueprints_registry.namespace,
+                parts=self.filters_registry_parts,
+            )
+        )
         material_location_resolver = CommonResourceLocationResolver(
             PhysicalRegistryLocation(
                 namespace=blueprints_registry.namespace,
@@ -260,6 +295,11 @@ class BlueprintsBuildContext:
             location_resolver=blueprint_location_resolver,
             loader=self.blueprint_loader,
             cache=self.blueprint_cache,
+        )
+        resolvers[Filter] = CommonResourceResolver[Filter](
+            location_resolver=filter_location_resolver,
+            loader=self.filter_loader,
+            cache=self.filter_cache,
         )
         resolvers[Material] = CommonResourceResolver[Material](
             location_resolver=material_location_resolver,

@@ -1,9 +1,10 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from pyckaxe.lib import (
+from pyckaxe import (
     Block,
     BlockState,
+    Breadcrumb,
     JsonValue,
     NbtCompound,
     ResourceLocation,
@@ -21,88 +22,93 @@ class MaterialDeserializationException(Exception):
 
 
 class MalformedMaterial(MaterialDeserializationException):
-    def __init__(self, raw: JsonValue):
-        self.raw: JsonValue = raw
-        super().__init__(raw, f"Malformed material")
-
-
-class MissingBlock(MaterialDeserializationException):
-    def __init__(self, raw: JsonValue):
-        self.raw: JsonValue = raw
-        super().__init__(f"Missing block")
-
-
-class InvalidBlock(MaterialDeserializationException):
-    def __init__(self, block: JsonValue):
-        self.block: JsonValue = block
-        super().__init__(f"Invalid block: {block}")
-
-
-class InvalidState(MaterialDeserializationException):
-    def __init__(self, state: JsonValue):
-        self.state: JsonValue = state
-        super().__init__(f"Invalid state: {state}")
-
-
-class InvalidData(MaterialDeserializationException):
-    def __init__(self, data: JsonValue):
-        self.data: JsonValue = data
-        super().__init__(f"Invalid data: {data}")
+    def __init__(self, message: str, raw_material: JsonValue, breadcrumb: Breadcrumb):
+        self.raw_material: JsonValue = raw_material
+        self.breadcrumb: Breadcrumb = breadcrumb
+        super().__init__(message)
 
 
 # @implements ResourceDeserializer[JsonValue, Material]
 @dataclass
 class MaterialDeserializer:
     # @implements ResourceDeserializer
-    def __call__(self, raw: JsonValue) -> Material:
-        return self.deserialize(raw)
+    def __call__(
+        self,
+        raw: JsonValue,
+        *,
+        breadcrumb: Optional[Breadcrumb] = None,
+    ) -> Material:
+        return self.deserialize(raw, breadcrumb or Breadcrumb())
 
-    def or_location(self, raw: JsonValue) -> MaterialOrLocation:
-        """ Deserialize a material or location from a raw value. """
+    def or_location(self, raw: JsonValue, breadcrumb: Breadcrumb) -> MaterialOrLocation:
+        """ Deserialize a `Material` or `MaterialLocation` from a raw value. """
         # A string is assumed to be a resource location.
         if isinstance(raw, str):
             return Material @ ResourceLocation.from_string(raw)
         # Anything else is assumed to be a serialized resource.
-        return self(raw)
+        return self(raw, breadcrumb=breadcrumb)
 
-    def deserialize(self, raw: JsonValue) -> Material:
+    def deserialize(self, raw_material: JsonValue, breadcrumb: Breadcrumb) -> Material:
         """ Deserialize a `Material` from a raw value. """
-        try:
-            if not isinstance(raw, dict):
-                raise MalformedMaterial(raw)
-
-            name = raw.get("block")
-            if not name:
-                raise MissingBlock(raw)
-            if not isinstance(name, str):
-                raise InvalidBlock(name)
-
-            state: Optional[BlockState] = None
-            if raw_state := raw.get("state"):
-                try:
-                    assert isinstance(raw_state, dict)
-                    state = BlockState(**raw_state)
-                except Exception as ex:
-                    raise InvalidState(raw_state) from ex
-
-            data: Optional[NbtCompound] = None
-            if raw_data := raw.get("data"):
-                try:
-                    assert isinstance(raw_data, dict)
-                    data = to_nbt_compound(raw_data)
-                except Exception as ex:
-                    raise InvalidData(raw_data) from ex
-
-            block = Block(
-                name=name,
-                state=state,
-                data=data,
+        if not isinstance(raw_material, dict):
+            raise MalformedMaterial(
+                f"Malformed material, at `{breadcrumb}`", raw_material, breadcrumb
             )
 
-            return Material(block)
+        # name (required, non-nullable, no default)
+        raw_name = raw_material.get("block")
+        breadcrumb_name = breadcrumb.name
+        if not raw_name:
+            raise MalformedMaterial(
+                f"Missing `name`, at `{breadcrumb_name}`", raw_material, breadcrumb_name
+            )
+        name = self.deserialize_name(raw_name, breadcrumb_name)
 
-        except MaterialDeserializationException as ex:
-            raise ex
+        # state (optional, nullable, defaults to null)
+        state: Optional[BlockState] = None
+        if (raw_state := raw_material.get("state")) is not None:
+            state = self.deserialize_state(raw_state, breadcrumb.state)
 
+        # data (optional, nullable, defaults to null)
+        data: Optional[NbtCompound] = None
+        if (raw_data := raw_material.get("data")) is not None:
+            data = self.deserialize_data(raw_data, breadcrumb.data)
+
+        block = Block(
+            name=name,
+            state=state,
+            data=data,
+        )
+
+        material = Material(block)
+
+        return material
+
+    def deserialize_name(self, raw_name: JsonValue, breadcrumb: Breadcrumb) -> str:
+        if not isinstance(raw_name, str):
+            raise MalformedMaterial(
+                f"Malformed `name`, at `{breadcrumb}`", raw_name, breadcrumb
+            )
+        return raw_name
+
+    def deserialize_state(
+        self, raw_state: JsonValue, breadcrumb: Breadcrumb
+    ) -> BlockState:
+        try:
+            assert isinstance(raw_state, dict)
+            return BlockState(**raw_state)
         except Exception as ex:
-            raise MalformedMaterial(raw) from ex
+            raise MalformedMaterial(
+                f"Malformed `state`, at `{breadcrumb}`", raw_state, breadcrumb
+            ) from ex
+
+    def deserialize_data(
+        self, raw_data: JsonValue, breadcrumb: Breadcrumb
+    ) -> NbtCompound:
+        try:
+            assert isinstance(raw_data, dict)
+            return to_nbt_compound(raw_data)
+        except Exception as ex:
+            raise MalformedMaterial(
+                f"Malformed `data`, at `{breadcrumb}`", raw_data, breadcrumb
+            ) from ex

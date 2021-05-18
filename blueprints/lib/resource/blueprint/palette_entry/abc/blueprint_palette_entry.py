@@ -1,15 +1,17 @@
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Dict
 
-__all__ = (
-    "BlueprintPalette",
-    "BlueprintPaletteEntry",
-)
+from pyckaxe import BlockMap, Position, ResolutionContext
 
-
-BlueprintPalette = Dict[str, "BlueprintPaletteEntry"]
+__all__ = ("BlueprintPaletteEntry",)
 
 
 @dataclass
-class BlueprintPaletteEntry:
+class BlueprintPaletteEntry(ABC):
     key: str
+
+    @abstractmethod
+    async def merge(
+        self, ctx: ResolutionContext, block_map: BlockMap, position: Position
+    ):
+        """ Merge into `block_map` at `position`. """

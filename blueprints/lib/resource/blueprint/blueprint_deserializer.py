@@ -1,16 +1,14 @@
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, List, Optional, Set, cast
+from typing import Any, Callable, Dict, List, Optional, cast
 
-from pyckaxe.lib import JsonValue, Position, ResourceLocation
-from pyckaxe.lib.block import Block
+from pyckaxe import HERE, Block, Breadcrumb, JsonValue, Position, ResourceLocation
 
 from blueprints.lib.resource.blueprint.blueprint import (
     Blueprint,
     BlueprintLayout,
-    BlueprintSymbolMap,
+    BlueprintPalette,
 )
 from blueprints.lib.resource.blueprint.palette_entry.abc.blueprint_palette_entry import (
-    BlueprintPalette,
     BlueprintPaletteEntry,
 )
 from blueprints.lib.resource.blueprint.palette_entry.blueprint_blueprint_palette_entry import (
@@ -23,9 +21,10 @@ from blueprints.lib.resource.blueprint.palette_entry.void_blueprint_palette_entr
     VoidBlueprintPaletteEntry,
 )
 from blueprints.lib.resource.blueprint.types import BlueprintOrLocation
+from blueprints.lib.resource.filter.filter_deserializer import FilterDeserializer
+from blueprints.lib.resource.filter.types import FilterOrLocation
 from blueprints.lib.resource.material.material import Material
 from blueprints.lib.resource.material.material_deserializer import MaterialDeserializer
-from blueprints.lib.resource.material.types import MaterialOrLocation
 
 __all__ = ("BlueprintDeserializer",)
 
@@ -35,297 +34,315 @@ class BlueprintDeserializationException(Exception):
 
 
 class MalformedBlueprint(BlueprintDeserializationException):
-    def __init__(self, raw: JsonValue):
-        self.raw: JsonValue = raw
-        super().__init__(f"Malformed blueprint")
+    def __init__(self, message: str, raw_blueprint: JsonValue, breadcrumb: Breadcrumb):
+        self.raw_blueprint: JsonValue = raw_blueprint
+        self.breadcrumb: Breadcrumb = breadcrumb
+        super().__init__(message)
 
 
-class MissingSize(BlueprintDeserializationException):
-    def __init__(self, raw: JsonValue):
-        self.raw: JsonValue = raw
-        super().__init__(f"Missing size")
-
-
-class InvalidSize(BlueprintDeserializationException):
-    def __init__(self, raw_size: JsonValue):
-        self.raw_size = raw_size
-        super().__init__(f"Invalid size: {raw_size}")
-
-
-class MissingPalette(BlueprintDeserializationException):
-    def __init__(self, raw: JsonValue):
-        self.raw: JsonValue = raw
-        super().__init__(f"Missing palette")
-
-
-class UnknownPaletteEntryType(BlueprintDeserializationException):
-    def __init__(self, raw_type: str):
-        self.raw_type: str = raw_type
-        super().__init__(f"Unknown palette entry type: {raw_type}")
-
-
-class InvalidPalette(BlueprintDeserializationException):
-    def __init__(self, raw_palette: JsonValue):
-        self.raw_palette = raw_palette
-        super().__init__(f"Invalid palette: {raw_palette}")
-
-
-class MissingSymbols(BlueprintDeserializationException):
-    def __init__(self, raw: JsonValue):
-        self.raw: JsonValue = raw
-        super().__init__(f"Missing symbols")
-
-
-class InvalidSymbols(BlueprintDeserializationException):
-    def __init__(self, raw_symbols: JsonValue):
-        self.raw_symbols = raw_symbols
-        super().__init__(f"Invalid symbols: {raw_symbols}")
-
-
-class MissingLayout(BlueprintDeserializationException):
-    def __init__(self, raw: JsonValue):
-        self.raw: JsonValue = raw
-        super().__init__(f"Missing layout")
-
-
-class InvalidLayout(BlueprintDeserializationException):
-    def __init__(self, raw_layout: JsonValue):
-        self.raw_layout = raw_layout
-        super().__init__(f"Invalid layout: {raw_layout}")
-
-
-class InvalidStructurePivot(BlueprintDeserializationException):
-    def __init__(self, raw_structure_pivot: JsonValue):
-        self.raw_structure_pivot = raw_structure_pivot
-        super().__init__(f"Invalid structure pivot: {raw_structure_pivot}")
-
-
-class InvalidResidueMask(BlueprintDeserializationException):
-    def __init__(self, raw_residue_mask: JsonValue):
-        self.raw_residue_mask = raw_residue_mask
-        super().__init__(f"Invalid residue mask: {raw_residue_mask}")
+class MalformedPaletteEntry(BlueprintDeserializationException):
+    def __init__(
+        self, message: str, raw_palette_entry: JsonValue, breadcrumb: Breadcrumb
+    ):
+        self.raw_palette_entry: JsonValue = raw_palette_entry
+        self.breadcrumb: Breadcrumb = breadcrumb
+        super().__init__(message)
 
 
 # @implements ResourceDeserializer[JsonValue, Blueprint]
 @dataclass
 class BlueprintDeserializer:
+    filter_deserializer: FilterDeserializer
     material_deserializer: MaterialDeserializer
 
     # @implements ResourceDeserializer
-    def __call__(self, raw: JsonValue) -> Blueprint:
-        return self.deserialize(raw)
+    def __call__(
+        self,
+        raw: JsonValue,
+        *,
+        breadcrumb: Optional[Breadcrumb] = None,
+    ) -> Blueprint:
+        return self.deserialize(raw, breadcrumb or Breadcrumb())
 
-    def or_location(self, raw: JsonValue) -> BlueprintOrLocation:
-        """ Deserialize a blueprint or location from a raw value. """
+    def or_location(
+        self, raw: JsonValue, breadcrumb: Breadcrumb
+    ) -> BlueprintOrLocation:
+        """ Deserialize a `Blueprint` or `BlueprintLocation` from a raw value. """
         # A string is assumed to be a resource location.
         if isinstance(raw, str):
             return Blueprint @ ResourceLocation.from_string(raw)
         # Anything else is assumed to be a serialized resource.
-        return self(raw)
+        return self(raw, breadcrumb=breadcrumb)
 
-    def deserialize(self, raw: JsonValue) -> Blueprint:
+    def deserialize(
+        self, raw_blueprint: JsonValue, breadcrumb: Breadcrumb
+    ) -> Blueprint:
         """ Deserialize a `Blueprint` from a raw value. """
-        try:
-            if not isinstance(raw, dict):
-                raise MalformedBlueprint(raw)
-
-            raw_size = raw.get("size")
-            if raw_size is None:
-                raise MissingSize(raw)
-            size = self.deserialize_size(raw_size)
-
-            raw_palette = raw.get("palette")
-            if raw_palette is None:
-                raise MissingPalette(raw)
-            palette = self.deserialize_palette(raw_palette)
-
-            raw_symbols = raw.get("symbols")
-            if raw_symbols is None:
-                raise MissingSymbols(raw)
-            symbols = self.deserialize_symbols(raw_symbols)
-
-            raw_layout = raw.get("layout")
-            if raw_layout is None:
-                raise MissingLayout(raw)
-            layout = self.deserialize_layout(raw_layout)
-
-            raw_structure_pivot = raw.get("structure_pivot")
-            structure_pivot = self.deserialize_structure_pivot(raw_structure_pivot)
-
-            raw_residue_mask = raw.get("residue_mask")
-            residue_mask = self.deserialize_residue_mask(raw_residue_mask)
-
-            return Blueprint(
-                size=size,
-                structure_pivot=structure_pivot,
-                residue_mask=residue_mask,
-                palette=palette,
-                symbols=symbols,
-                layout=layout,
+        if not isinstance(raw_blueprint, dict):
+            raise MalformedBlueprint(
+                f"Malformed blueprint, at `{breadcrumb}`", raw_blueprint, breadcrumb
             )
 
-        except BlueprintDeserializationException as ex:
-            raise ex
+        # size (required, non-nullable)
+        raw_size = raw_blueprint.get("size")
+        breadcrumb_size = breadcrumb.size
+        if raw_size is None:
+            raise MalformedBlueprint(
+                f"Missing `size`, at `{breadcrumb_size}`",
+                raw_blueprint,
+                breadcrumb_size,
+            )
+        size = self.deserialize_size(raw_size, breadcrumb_size)
 
-        except Exception as ex:
-            raise MalformedBlueprint(raw) from ex
+        # anchor (optional, non-nullable, has a default)
+        anchor: Position = HERE
+        if raw_anchor := raw_blueprint.get("anchor"):
+            anchor = self.deserialize_anchor(raw_anchor, breadcrumb.anchor)
 
-    def deserialize_size(self, raw_size: JsonValue) -> Position:
+        # palette (required, non-nullable)
+        raw_palette = raw_blueprint.get("palette")
+        breadcrumb_palette = breadcrumb.palette
+        if raw_palette is None:
+            raise MalformedBlueprint(
+                f"Missing `palette`, at `{breadcrumb_palette}`",
+                raw_blueprint,
+                breadcrumb_palette,
+            )
+        palette = self.deserialize_palette(raw_palette, breadcrumb_palette)
+
+        # layout (required, non-nullable)
+        raw_layout = raw_blueprint.get("layout")
+        breadcrumb_layout = breadcrumb.layout
+        if raw_layout is None:
+            raise MalformedBlueprint(
+                f"Missing `layout`, at `{breadcrumb_layout}`",
+                raw_blueprint,
+                breadcrumb_layout,
+            )
+        layout = self.deserialize_layout(raw_layout, breadcrumb_layout)
+
+        blueprint = Blueprint(
+            size=size,
+            anchor=anchor,
+            palette=palette,
+            layout=layout,
+        )
+
+        return blueprint
+
+    def deserialize_size(self, raw_size: JsonValue, breadcrumb: Breadcrumb) -> Position:
         try:
-            position = ~Position.from_list(cast(Any, raw_size))
-            return position
+            assert isinstance(raw_size, list)
+            return ~Position.from_list(cast(Any, raw_size))
         except Exception as ex:
-            raise InvalidSize(raw_size) from ex
+            raise MalformedBlueprint(
+                f"Malformed `size`, at `{breadcrumb}`", raw_size, breadcrumb
+            ) from ex
 
-    def deserialize_palette(self, raw_palette: JsonValue) -> BlueprintPalette:
+    def deserialize_anchor(
+        self, raw_anchor: JsonValue, breadcrumb: Breadcrumb
+    ) -> Position:
         try:
-            assert isinstance(raw_palette, dict)
-            palette = {
-                palette_key: self.deserialize_palette_entry(
-                    palette_key, raw_palette_entry
+            assert isinstance(raw_anchor, list)
+            return ~Position.from_list(cast(Any, raw_anchor))
+        except Exception as ex:
+            raise MalformedBlueprint(
+                f"Malformed `anchor`, at `{breadcrumb}`", raw_anchor, breadcrumb
+            ) from ex
+
+    def deserialize_palette(
+        self, raw_palette: JsonValue, breadcrumb: Breadcrumb
+    ) -> BlueprintPalette:
+        if not isinstance(raw_palette, dict):
+            raise MalformedBlueprint(
+                f"Malformed `palette`, at `{breadcrumb}`", raw_palette, breadcrumb
+            )
+        palette: Dict[str, BlueprintPaletteEntry] = {}
+        for i, (palette_key, raw_palette_entry) in enumerate(raw_palette.items()):
+            if len(palette_key) != 1:
+                raise MalformedPaletteEntry(
+                    f"Palette key `{palette_key}` is not a single character,"
+                    + f" at `{breadcrumb[palette_key]}`",
+                    raw_palette_entry,
+                    breadcrumb[palette_key],
                 )
-                for palette_key, raw_palette_entry in raw_palette.items()
-            }
-            return palette
-        except Exception as ex:
-            raise InvalidPalette(raw_palette) from ex
+            palette[palette_key] = self.deserialize_palette_entry(
+                palette_key, raw_palette_entry, breadcrumb[i]
+            )
+        return palette
 
     def deserialize_palette_entry(
-        self, palette_key: str, raw_palette_entry: JsonValue
+        self, palette_key: str, raw_palette_entry: JsonValue, breadcrumb: Breadcrumb
     ) -> BlueprintPaletteEntry:
         # A string is assumed to be a basic block.
         if isinstance(raw_palette_entry, str):
             block_name = raw_palette_entry
             material = Material(Block(block_name))
             return MaterialBlueprintPaletteEntry(key=palette_key, material=material)
-        # Otherwise we ought to have a concrete definition.
-        assert isinstance(raw_palette_entry, dict)
-        raw_type = raw_palette_entry.get("type")
-        assert isinstance(raw_type, str)
+
+        # Otherwise we ought to have a concrete definition...
+
+        if not isinstance(raw_palette_entry, dict):
+            raise MalformedPaletteEntry(
+                f"Malformed palette entry, at `{breadcrumb}`",
+                raw_palette_entry,
+                breadcrumb,
+            )
+
+        palette_entry_type = raw_palette_entry.get("type")
+        breadcrumb_type = breadcrumb.type
+        if palette_entry_type is None:
+            raise MalformedPaletteEntry(
+                f"Missing `type`, at `{breadcrumb_type}`",
+                raw_palette_entry,
+                breadcrumb_type,
+            )
+        if not isinstance(palette_entry_type, str):
+            raise MalformedPaletteEntry(
+                f"Malformed `type`, at `{breadcrumb_type}`",
+                raw_palette_entry,
+                breadcrumb_type,
+            )
+
         palette_entry_deserializers: Dict[
-            str, Callable[[str, JsonValue], BlueprintPaletteEntry]
+            str,
+            Callable[[str, Dict[str, JsonValue], Breadcrumb], BlueprintPaletteEntry],
         ] = {
             "blueprint": self.deserialize_blueprint_palette_entry,
             "material": self.deserialize_material_palette_entry,
             "void": self.deserialize_void_palette_entry,
         }
-        palette_entry_deserializer = palette_entry_deserializers.get(raw_type)
+
+        palette_entry_deserializer = palette_entry_deserializers.get(palette_entry_type)
+
         if not palette_entry_deserializer:
-            raise UnknownPaletteEntryType(raw_type)
-        palette_entry = palette_entry_deserializer(palette_key, raw_palette_entry)
+            raise MalformedPaletteEntry(
+                f"Unknown `type` `{palette_entry_type}`, at `{breadcrumb_type}`",
+                raw_palette_entry,
+                breadcrumb,
+            )
+
+        palette_entry = palette_entry_deserializer(
+            palette_key, raw_palette_entry, breadcrumb
+        )
+
         return palette_entry
 
     def deserialize_blueprint_palette_entry(
-        self, palette_key: str, raw_palette_entry: JsonValue
+        self,
+        palette_key: str,
+        raw_palette_entry: Dict[str, JsonValue],
+        breadcrumb: Breadcrumb,
     ) -> BlueprintBlueprintPaletteEntry:
-        assert isinstance(raw_palette_entry, dict)
-
+        # blueprint (required, non-nullable)
         raw_blueprint = raw_palette_entry.get("blueprint")
-        assert raw_blueprint is not None
-        blueprint = self.or_location(raw_blueprint)
+        breadcrumb_blueprint = breadcrumb.blueprint
+        if raw_blueprint is None:
+            raise MalformedPaletteEntry(
+                f"Missing `blueprint`, at `{breadcrumb_blueprint}`",
+                raw_palette_entry,
+                breadcrumb_blueprint,
+            )
+        blueprint = self.or_location(raw_blueprint, breadcrumb_blueprint)
 
-        raw_offset = raw_palette_entry.get("offset", [0, 0, 0])
-        offset = ~Position.from_list(cast(Any, raw_offset))
+        # offset (optional, non-nullable, has a default)
+        offset: Position = HERE
+        if raw_offset := raw_palette_entry.get("offset"):
+            try:
+                assert isinstance(raw_offset, list)
+                offset = ~Position.from_list(cast(Any, raw_offset))
+            except Exception as ex:
+                raise MalformedBlueprint(
+                    f"Malformed `offset`, at `{breadcrumb.offset}`",
+                    raw_offset,
+                    breadcrumb.offset,
+                ) from ex
 
-        filter_keys: Set[str] = set()
-        raw_filter_keys = raw_palette_entry.get("filter_keys")
-        if raw_filter_keys is not None:
-            assert isinstance(raw_filter_keys, list)
-            for filter_key in raw_filter_keys:
-                assert isinstance(filter_key, str)
-                assert filter_key not in filter_keys
-                filter_keys.add(filter_key)
-
-        replace_keys: Dict[str, str] = {}
-        raw_replace_keys = raw_palette_entry.get("replace_keys")
-        if raw_replace_keys is not None:
-            assert isinstance(raw_replace_keys, dict)
-            for k, v in raw_replace_keys.items():
-                assert isinstance(v, str)
-                replace_keys[k] = v
+        # filter (optional, nullable, defaults to null)
+        filter: Optional[FilterOrLocation] = None
+        if raw_filter := raw_palette_entry.get("filter"):
+            filter = self.filter_deserializer.or_location(raw_filter, breadcrumb.filter)
 
         return BlueprintBlueprintPaletteEntry(
             key=palette_key,
             blueprint=blueprint,
             offset=offset,
-            filter_keys=filter_keys,
-            replace_keys=replace_keys,
+            filter=filter,
         )
 
     def deserialize_material_palette_entry(
-        self, palette_key: str, raw_palette_entry: JsonValue
+        self,
+        palette_key: str,
+        raw_palette_entry: Dict[str, JsonValue],
+        breadcrumb: Breadcrumb,
     ) -> MaterialBlueprintPaletteEntry:
-        assert isinstance(raw_palette_entry, dict)
+        # material (required, non-nullable)
         raw_material = raw_palette_entry.get("material")
-        assert raw_material is not None
-        material = self.material_deserializer.or_location(raw_material)
+        if raw_material is None:
+            raise MalformedPaletteEntry(
+                f"Missing `material`, at `{breadcrumb.material}`",
+                raw_palette_entry,
+                breadcrumb.material,
+            )
+        material = self.material_deserializer.or_location(raw_material, breadcrumb)
+
         return MaterialBlueprintPaletteEntry(
             key=palette_key,
             material=material,
         )
 
     def deserialize_void_palette_entry(
-        self, palette_key: str, raw_palette_entry: JsonValue
+        self,
+        palette_key: str,
+        raw_palette_entry: Dict[str, JsonValue],
+        breadcrumb: Breadcrumb,
     ) -> VoidBlueprintPaletteEntry:
         return VoidBlueprintPaletteEntry(
             key=palette_key,
         )
 
-    def deserialize_symbols(self, raw_symbols: JsonValue) -> BlueprintSymbolMap:
-        try:
-            assert isinstance(raw_symbols, dict)
-            symbols = cast(BlueprintSymbolMap, raw_symbols)
-            return symbols
-        except Exception as ex:
-            raise InvalidSymbols(raw_symbols) from ex
+    def deserialize_layout(
+        self, raw_layout: JsonValue, breadcrumb: Breadcrumb
+    ) -> BlueprintLayout:
+        if not isinstance(raw_layout, list):
+            raise MalformedBlueprint(
+                f"Malformed `layout`, at `{breadcrumb}`", raw_layout, breadcrumb
+            )
 
-    def deserialize_layout(self, raw_layout: JsonValue) -> BlueprintLayout:
-        try:
-            assert isinstance(raw_layout, list)
+        layout: BlueprintLayout = []
 
-            layout: BlueprintLayout = []
+        # Read the layout upside-down.
+        for i, raw_layer in enumerate(reversed(raw_layout)):
+            if raw_layer is None:
+                layout.append([])
+                continue
 
-            # Read the layout upside-down.
-            for raw_layer in reversed(raw_layout):
-                if raw_layer is None:
-                    layout.append([])
+            if isinstance(raw_layer, str):
+                raw_layer = list(raw_layer)
+
+            if not isinstance(raw_layer, list):
+                raise MalformedBlueprint(
+                    f"Malformed `layout` layer, at `{breadcrumb[i]}`",
+                    raw_layer,
+                    breadcrumb[i],
+                )
+
+            layer: List[str] = []
+
+            for j, raw_row in enumerate(raw_layer):
+                if raw_row is None:
+                    layer.append("")
                     continue
 
-                if isinstance(raw_layer, str):
-                    raw_layer = list(raw_layer)
+                if not isinstance(raw_row, str):
+                    raise MalformedBlueprint(
+                        f"Malformed `layout` row, at `{breadcrumb[i][j]}`",
+                        raw_row,
+                        breadcrumb[i][j],
+                    )
 
-                assert isinstance(raw_layer, list)
+                layer.append(raw_row)
 
-                layer: List[str] = []
+            layout.append(layer)
 
-                for raw_row in raw_layer:
-                    if raw_row is None:
-                        layer.append("")
-                        continue
-                    assert isinstance(raw_row, str)
-                    layer.append(raw_row)
-
-                layout.append(layer)
-
-            return layout
-
-        except Exception as ex:
-            raise InvalidLayout(raw_layout) from ex
-
-    def deserialize_structure_pivot(
-        self, raw_structure_pivot: JsonValue
-    ) -> Optional[Position]:
-        if raw_structure_pivot is not None:
-            try:
-                return Position.from_list(cast(Any, raw_structure_pivot))
-            except Exception as ex:
-                raise InvalidStructurePivot(raw_structure_pivot) from ex
-
-    def deserialize_residue_mask(
-        self, raw_residue_mask: JsonValue
-    ) -> Optional[MaterialOrLocation]:
-        if raw_residue_mask is not None:
-            try:
-                return self.material_deserializer.or_location(raw_residue_mask)
-            except Exception as ex:
-                raise InvalidResidueMask(raw_residue_mask) from ex
+        return layout

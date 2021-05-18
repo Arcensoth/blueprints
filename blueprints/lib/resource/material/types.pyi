@@ -1,6 +1,6 @@
 from typing import Union
 
-from pyckaxe.lib import ClassifiedResourceLocation, ResourceProcessingContext
+from pyckaxe import ClassifiedResourceLocation, ResourceProcessingContext
 
 from blueprints.lib.resource.material.material import Material
 

@@ -9,6 +9,8 @@ from blueprints import __version__
 from blueprints.build.blueprints_build_context import (
     DEFAULT_BLUEPRINT_CACHE_SIZE,
     DEFAULT_BLUEPRINTS_REGISTRY,
+    DEFAULT_FILTER_CACHE_SIZE,
+    DEFAULT_FILTERS_REGISTRY,
     DEFAULT_GENERATED_STRUCTURES_REGISTRY,
     DEFAULT_MATCH_FILES,
     DEFAULT_MATERIAL_CACHE_SIZE,
@@ -83,6 +85,13 @@ def cli(log: str, detailed_logs: bool):
     + f" Defaults to: {DEFAULT_BLUEPRINTS_REGISTRY}",
 )
 @click.option(
+    "--filters_registry",
+    "filters_registry",
+    type=str,
+    help="The registry where custom filters are located."
+    + f" Defaults to: {DEFAULT_FILTERS_REGISTRY}",
+)
+@click.option(
     "--materials_registry",
     "materials_registry",
     type=str,
@@ -95,6 +104,13 @@ def cli(log: str, detailed_logs: bool):
     help="The maximum number of blueprints to keep cached in memory."
     + "Set to 0 to disable caching. Set to -1 for an unbounded cache."
     + f" Defaults to: {DEFAULT_BLUEPRINT_CACHE_SIZE}",
+)
+@click.option(
+    "--filter_cache_size",
+    type=int,
+    help="The maximum number of filters to keep cached in memory."
+    + "Set to 0 to disable caching. Set to -1 for an unbounded cache."
+    + f" Defaults to: {DEFAULT_FILTER_CACHE_SIZE}",
 )
 @click.option(
     "--material_cache_size",
