@@ -41,7 +41,7 @@ class MaterialDeserializer:
         return self.deserialize(raw, breadcrumb or Breadcrumb())
 
     def or_location(self, raw: JsonValue, breadcrumb: Breadcrumb) -> MaterialOrLocation:
-        """ Deserialize a `Material` or `MaterialLocation` from a raw value. """
+        """Deserialize a `Material` or `MaterialLocation` from a raw value."""
         # A string is assumed to be a resource location.
         if isinstance(raw, str):
             return Material @ ResourceLocation.from_string(raw)
@@ -49,7 +49,7 @@ class MaterialDeserializer:
         return self(raw, breadcrumb=breadcrumb)
 
     def deserialize(self, raw_material: JsonValue, breadcrumb: Breadcrumb) -> Material:
-        """ Deserialize a `Material` from a raw value. """
+        """Deserialize a `Material` from a raw value."""
         if not isinstance(raw_material, dict):
             raise MalformedMaterial(
                 f"Malformed material, at `{breadcrumb}`", raw_material, breadcrumb

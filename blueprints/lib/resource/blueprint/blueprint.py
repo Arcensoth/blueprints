@@ -26,7 +26,7 @@ class Blueprint(Resource):
     layout: BlueprintLayout
 
     def scan(self, symbol: str) -> Iterable[Position]:
-        """ Scan over the blueprint, looking for a particular symbol. """
+        """Scan over the blueprint, looking for a particular symbol."""
         for y, floor in enumerate(self.layout):
             for x, row in enumerate(floor):
                 yield from (

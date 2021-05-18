@@ -67,7 +67,7 @@ class BlueprintDeserializer:
     def or_location(
         self, raw: JsonValue, breadcrumb: Breadcrumb
     ) -> BlueprintOrLocation:
-        """ Deserialize a `Blueprint` or `BlueprintLocation` from a raw value. """
+        """Deserialize a `Blueprint` or `BlueprintLocation` from a raw value."""
         # A string is assumed to be a resource location.
         if isinstance(raw, str):
             return Blueprint @ ResourceLocation.from_string(raw)
@@ -77,7 +77,7 @@ class BlueprintDeserializer:
     def deserialize(
         self, raw_blueprint: JsonValue, breadcrumb: Breadcrumb
     ) -> Blueprint:
-        """ Deserialize a `Blueprint` from a raw value. """
+        """Deserialize a `Blueprint` from a raw value."""
         if not isinstance(raw_blueprint, dict):
             raise MalformedBlueprint(
                 f"Malformed blueprint, at `{breadcrumb}`", raw_blueprint, breadcrumb

@@ -49,7 +49,7 @@ class FilterDeserializer:
         return self.deserialize(raw, breadcrumb or Breadcrumb())
 
     def or_location(self, raw: JsonValue, breadcrumb: Breadcrumb) -> FilterOrLocation:
-        """ Deserialize a `Filter` or `FilterLocation` from a raw value. """
+        """Deserialize a `Filter` or `FilterLocation` from a raw value."""
         # A string is assumed to be a resource location.
         if isinstance(raw, str):
             return Filter @ ResourceLocation.from_string(raw)
@@ -57,7 +57,7 @@ class FilterDeserializer:
         return self(raw, breadcrumb=breadcrumb)
 
     def deserialize(self, raw_filter: JsonValue, breadcrumb: Breadcrumb) -> Filter:
-        """ Deserialize a `Filter` from a raw value. """
+        """Deserialize a `Filter` from a raw value."""
         if isinstance(raw_filter, dict):
             # rules (required, non-nullable, no default)
             raw_rules = raw_filter.get("rules")

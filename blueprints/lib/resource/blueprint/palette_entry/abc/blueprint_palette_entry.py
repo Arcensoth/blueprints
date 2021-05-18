@@ -14,4 +14,4 @@ class BlueprintPaletteEntry(ABC):
     async def merge(
         self, ctx: ResolutionContext, block_map: BlockMap, position: Position
     ):
-        """ Merge into `block_map` at `position`. """
+        """Merge into `block_map` at `position`."""

@@ -43,7 +43,7 @@ class BlueprintTransformer:
     async def transform(
         self, ctx: BlueprintProcessingContext
     ) -> AsyncIterable[Tuple[Resource, ResourceLocation]]:
-        """ Turn the blueprint into a structure NBT file. """
+        """Turn the blueprint into a structure NBT file."""
         structure = await ctx.resource.to_structure(ctx)
         structure_location = self.to_structure_location(ctx.location)
         yield structure, structure_location

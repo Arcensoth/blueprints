@@ -10,4 +10,4 @@ __all__ = ("FilterRule",)
 class FilterRule(ABC):
     @abstractmethod
     async def apply(self, ctx: ResolutionContext, block_map: BlockMap):
-        """ Apply the filter rule to `block_map`. """
+        """Apply the filter rule to `block_map`."""
