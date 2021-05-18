@@ -1,0 +1,20 @@
+size: [9, 1, 9]
+
+palette:
+  _:
+    type: block
+    name: minecraft:air
+  C:
+    type: block
+    name: minecraft:cobblestone
+
+layout:
+  - - CCCCCCCCC
+    - C_______C
+    - C_______C
+    - C_______C
+    - C_______C
+    - C_______C
+    - C_______C
+    - C_______C
+    - CCCCCCCCC

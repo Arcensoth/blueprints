@@ -1,0 +1,20 @@
+size: [9, 6, 9]
+
+palette:
+  B:
+    type: blueprint
+    blueprint: demo:dungeon/empty
+  S:
+    type: block
+    name: minecraft:spawner
+    data:
+      SpawnData:
+        id: minecraft:zombie
+
+layout:
+  - - .
+    - .
+    - .
+    - .
+    - ....S
+  - - B

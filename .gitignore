@@ -5,3 +5,5 @@ venv/**
 dist/**
 
 .vscode/**
+
+tests_output/**
