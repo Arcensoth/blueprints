@@ -263,33 +263,24 @@ class BlueprintsBuildContext:
 
     async def build_registry(self, blueprints_registry: PhysicalRegistryLocation):
         self.log.info(f"Processing registry {blueprints_registry}")
-        # Create and register scanners.
+        # Create and register input scanners.
         scanners = ResourceScannerSet(
             CommonResourceScanner[Blueprint](blueprints_registry, Blueprint),
         )
-        # Create location resolvers.
+        # Create input location resolvers.
         blueprint_location_resolver = CommonResourceLocationResolver(
-            blueprints_registry
+            path=blueprints_registry.namespace.path.parent,
+            parts=self.blueprints_registry_parts,
         )
         filter_location_resolver = CommonResourceLocationResolver(
-            PhysicalRegistryLocation(
-                namespace=blueprints_registry.namespace,
-                parts=self.filters_registry_parts,
-            )
+            path=blueprints_registry.namespace.path.parent,
+            parts=self.filters_registry_parts,
         )
         material_location_resolver = CommonResourceLocationResolver(
-            PhysicalRegistryLocation(
-                namespace=blueprints_registry.namespace,
-                parts=self.materials_registry_parts,
-            )
+            path=blueprints_registry.namespace.path.parent,
+            parts=self.materials_registry_parts,
         )
-        structure_location_resolver = CommonResourceLocationResolver(
-            PhysicalRegistryLocation(
-                namespace=blueprints_registry.namespace,
-                parts=self.generated_structures_registry_parts,
-            )
-        )
-        # Create and register resolvers.
+        # Create and register input resolvers.
         resolvers = ResourceResolverSet()
         resolvers[Blueprint] = CommonResourceResolver[Blueprint](
             location_resolver=blueprint_location_resolver,
@@ -308,7 +299,10 @@ class BlueprintsBuildContext:
         )
         # Create and register output location resolvers.
         output_location_resolvers = ResourceLocationResolverSet()
-        output_location_resolvers[Structure] = structure_location_resolver
+        output_location_resolvers[Structure] = CommonResourceLocationResolver(
+            path=Path(self.output_path / "data"),
+            parts=self.generated_structures_registry_parts,
+        )
         # Create a representation of the output pack.
         output_pack = WritablePack(
             path=self.output_path,
