@@ -11,6 +11,9 @@ from blueprints.lib.resource.blueprint.blueprint import (
 from blueprints.lib.resource.blueprint.palette_entry.abc.blueprint_palette_entry import (
     BlueprintPaletteEntry,
 )
+from blueprints.lib.resource.blueprint.palette_entry.block_blueprint_palette_entry import (
+    BlockBlueprintPaletteEntry,
+)
 from blueprints.lib.resource.blueprint.palette_entry.blueprint_blueprint_palette_entry import (
     BlueprintBlueprintPaletteEntry,
 )
@@ -208,6 +211,7 @@ class BlueprintDeserializer:
             str,
             Callable[[str, Dict[str, JsonValue], Breadcrumb], BlueprintPaletteEntry],
         ] = {
+            "block": self.deserialize_block_palette_entry,
             "blueprint": self.deserialize_blueprint_palette_entry,
             "material": self.deserialize_material_palette_entry,
             "void": self.deserialize_void_palette_entry,
@@ -227,6 +231,17 @@ class BlueprintDeserializer:
         )
 
         return palette_entry
+
+    def deserialize_block_palette_entry(
+        self,
+        palette_key: str,
+        raw_palette_entry: Dict[str, JsonValue],
+        breadcrumb: Breadcrumb,
+    ) -> BlockBlueprintPaletteEntry:
+        block = self.material_deserializer.deserialize_block(
+            raw_palette_entry, breadcrumb
+        )
+        return BlockBlueprintPaletteEntry(key=palette_key, block=block)
 
     def deserialize_blueprint_palette_entry(
         self,
@@ -264,10 +279,7 @@ class BlueprintDeserializer:
             filter = self.filter_deserializer.or_location(raw_filter, breadcrumb.filter)
 
         return BlueprintBlueprintPaletteEntry(
-            key=palette_key,
-            blueprint=blueprint,
-            offset=offset,
-            filter=filter,
+            key=palette_key, blueprint=blueprint, offset=offset, filter=filter
         )
 
     def deserialize_material_palette_entry(
@@ -286,10 +298,7 @@ class BlueprintDeserializer:
             )
         material = self.material_deserializer.or_location(raw_material, breadcrumb)
 
-        return MaterialBlueprintPaletteEntry(
-            key=palette_key,
-            material=material,
-        )
+        return MaterialBlueprintPaletteEntry(key=palette_key, material=material)
 
     def deserialize_void_palette_entry(
         self,
@@ -297,9 +306,7 @@ class BlueprintDeserializer:
         raw_palette_entry: Dict[str, JsonValue],
         breadcrumb: Breadcrumb,
     ) -> VoidBlueprintPaletteEntry:
-        return VoidBlueprintPaletteEntry(
-            key=palette_key,
-        )
+        return VoidBlueprintPaletteEntry(key=palette_key)
 
     def deserialize_layout(
         self, raw_layout: JsonValue, breadcrumb: Breadcrumb

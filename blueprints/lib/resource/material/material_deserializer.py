@@ -50,39 +50,39 @@ class MaterialDeserializer:
 
     def deserialize(self, raw_material: JsonValue, breadcrumb: Breadcrumb) -> Material:
         """Deserialize a `Material` from a raw value."""
-        if not isinstance(raw_material, dict):
+        block = self.deserialize_block(raw_material, breadcrumb)
+        return Material(block=block)
+
+    def deserialize_block(self, raw_block: JsonValue, breadcrumb: Breadcrumb) -> Block:
+        if not isinstance(raw_block, dict):
             raise MalformedMaterial(
-                f"Malformed material, at `{breadcrumb}`", raw_material, breadcrumb
+                f"Malformed material, at `{breadcrumb}`", raw_block, breadcrumb
             )
 
         # name (required, non-nullable, no default)
-        raw_name = raw_material.get("block")
+        raw_name = raw_block.get("name")
         breadcrumb_name = breadcrumb.name
         if not raw_name:
             raise MalformedMaterial(
-                f"Missing `name`, at `{breadcrumb_name}`", raw_material, breadcrumb_name
+                f"Missing `name`, at `{breadcrumb_name}`", raw_block, breadcrumb_name
             )
         name = self.deserialize_name(raw_name, breadcrumb_name)
 
         # state (optional, nullable, defaults to null)
         state: Optional[BlockState] = None
-        if (raw_state := raw_material.get("state")) is not None:
+        if (raw_state := raw_block.get("state")) is not None:
             state = self.deserialize_state(raw_state, breadcrumb.state)
 
         # data (optional, nullable, defaults to null)
         data: Optional[NbtCompound] = None
-        if (raw_data := raw_material.get("data")) is not None:
+        if (raw_data := raw_block.get("data")) is not None:
             data = self.deserialize_data(raw_data, breadcrumb.data)
 
-        block = Block(
+        return Block(
             name=name,
             state=state,
             data=data,
         )
-
-        material = Material(block)
-
-        return material
 
     def deserialize_name(self, raw_name: JsonValue, breadcrumb: Breadcrumb) -> str:
         if not isinstance(raw_name, str):
