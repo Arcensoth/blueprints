@@ -3,7 +3,7 @@ size: [9, 6, 9]
 palette:
   B:
     type: blueprint
-    blueprint: demo:dungeon/empty
+    blueprint: box_dungeon:empty
   S:
     type: block
     name: minecraft:spawner

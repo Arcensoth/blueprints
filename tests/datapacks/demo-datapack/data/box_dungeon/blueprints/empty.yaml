@@ -3,10 +3,10 @@ size: [9, 6, 9]
 palette:
   F:
     type: blueprint
-    blueprint: demo:dungeon/floor
+    blueprint: box_dungeon:floor
   W:
     type: blueprint
-    blueprint: demo:dungeon/walls
+    blueprint: box_dungeon:walls
 
 layout:
   - - W

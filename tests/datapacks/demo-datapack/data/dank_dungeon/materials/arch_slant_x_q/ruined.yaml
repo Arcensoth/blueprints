@@ -1,0 +1,5 @@
+name: minecraft:andesite_stairs
+state:
+  facing: south
+  half: top
+  shape: straight

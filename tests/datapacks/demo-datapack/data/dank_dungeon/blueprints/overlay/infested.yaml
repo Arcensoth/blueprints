@@ -1,0 +1,10 @@
+size: [9, 9, 9]
+
+palette:
+  B:
+    type: blueprint
+    blueprint: dank_dungeon:base
+    filter: dank_dungeon:infested
+
+layout:
+  - - B

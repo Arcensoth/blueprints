@@ -1,0 +1,8 @@
+- type: keep_materials
+  materials:
+    - dank_dungeon:stone/base
+
+- type: replace_materials
+  materials:
+    - dank_dungeon:stone/base
+  replacement: dank_dungeon:stone/treasure

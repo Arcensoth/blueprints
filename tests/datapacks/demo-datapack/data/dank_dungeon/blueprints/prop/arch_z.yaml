@@ -1,0 +1,30 @@
+size: [7, 7, 1]
+
+# Anchor to the top-middle of the arch.
+anchor: [3, 6, 0]
+
+palette:
+  B:
+    type: material
+    material: dank_dungeon:bricks/base
+  C:
+    type: material
+    material: dank_dungeon:chiseled_bricks
+  s:
+    type: material
+    material: dank_dungeon:stone/base
+  p:
+    type: material
+    material: dank_dungeon:arch_slant_z_p/base
+  q:
+    type: material
+    material: dank_dungeon:arch_slant_z_q/base
+
+layout:
+  - BBBBBBB
+  - Bp   qB
+  - B     B
+  - C     C
+  - s     s
+  - s     s
+  - s     s

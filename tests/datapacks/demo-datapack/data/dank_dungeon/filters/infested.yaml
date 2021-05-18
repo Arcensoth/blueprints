@@ -1,0 +1,14 @@
+- type: keep_materials
+  materials:
+    - dank_dungeon:bricks/base
+    - dank_dungeon:stone/base
+
+- type: replace_materials
+  materials:
+    - dank_dungeon:bricks/base
+  replacement: dank_dungeon:bricks/infested
+
+- type: replace_materials
+  materials:
+    - dank_dungeon:stone/base
+  replacement: dank_dungeon:stone/infested
