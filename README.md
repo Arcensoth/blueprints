@@ -18,6 +18,24 @@ Here are some reasons you may want to use blueprints:
 - They can be updated to (and optimized for) a newer version of the game, just by re-running the CLI with the `--data_version` argument.
 - They have the potential to take up significantly less space than their NBT equivalent, for codebases that take advantage of composition.
 
+## Usage
+
+Blueprints are created and maintained in the same way as vanilla resources, but under a made-up `blueprints` folder.
+
+See the [examples] and the [demo pack](https://github.com/Arcensoth/blueprints/tree/main/tests/datapacks/demo-datapack/data) for reference.
+
+The most basic invocation of the CLI looks like this:
+
+```bash
+python -m blueprints build --input path/to/input/pack --output path/to/output/pack --data_version 2715
+```
+
+- `--input` is the path to the input pack. This is where your blueprints reside.
+- `--output` is the path to the output pack. This is where the generated structures files will be placed. This can be the same as the input pack, but beware of overwriting existing files.
+- `--data_version` is required and `2715` should be replaced with the [version of the game](https://minecraft.fandom.com/wiki/Data_version#List_of_data_versions) you are targeting.
+
+Run `python -m blueprints build --help` for a complete list of options.
+
 ## Examples
 
 All examples use YAML instead of JSON, but the YAML used is 1:1 convertible to/from JSON.
