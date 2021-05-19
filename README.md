@@ -2,151 +2,138 @@
 
 > Text-based structures for Minecraft.
 
-# Examples
-
-## Blueprints
-
 Blueprints are a text-based, human-readable/writable structure format. A blueprint compiles-down to a single NBT structure file that can be loaded with a structure block.
 
-Note that all examples use YAML instead of JSON, but the YAML used is 1:1 convertible to/from JSON.
+## Examples
 
-### `demo:bricks`
+All examples use YAML instead of JSON, but the YAML used is 1:1 convertible to/from JSON.
 
-This first example uses blocks to create a basic structure.
+See the full [demo pack](https://github.com/Arcensoth/blueprints/tree/main/tests/datapacks/demo-datapack/data) for a complete set of examples.
 
-[![image](https://i.imgur.com/0fsLTsp.png)](https://i.imgur.com/yxnoyF1.png)
+This first example uses basic blocks to create a simple structure.
 
-`data/demo/blueprints/bricks.yaml`
+![image](https://user-images.githubusercontent.com/1885643/118862799-20da5f80-b8ac-11eb-9ad3-23b50f251e32.png)
+
+**`fleecy_box:base`**
+
+[`data/fleecy_box/blueprints/base.yaml`](https://github.com/Arcensoth/blueprints/blob/main/tests/datapacks/demo-datapack/data/fleecy_box/blueprints/base.yaml)
 
 ```yaml
-# Restrict the size of the structure. Anything larger will cause an error.
+# Restrict the size of the structure. An error will be raised if anything extends
+# outside of these bounds. This goes by (x, y, z) or (length x height x width).
 size: [5, 5, 5]
 
 # The palette maps characters to different types of palette entries that describe how to
-# populate the structure.
+# populate the structure. These can be blocks as well as other blueprints.
 palette:
-  _:
+  # Strings are assumed to be basic blocks.
+  _: minecraft:air
+  g: minecraft:glass
+  c: minecraft:glowstone
+  b: minecraft:bricks
+  # To define block states, use the block type entry.
+  P:
     type: block
-    block: minecraft:air
-  f:
-    type: block
-    block: minecraft:polished_andesite
-  c:
-    type: block
-    block: minecraft:stone_bricks
-  o:
-    type: block
-    block: minecraft:quartz_pillar
-  I:
-    type: block
-    block: minecraft:chiseled_stone_bricks
+    name: minecraft:quartz_pillar
+    state:
+      axis: y
   X:
     type: block
-    block: minecraft:tnt
+    name: minecraft:tnt
     state:
       unstable: true
-  H:
-    # Materials are optional, centralized block definitions.
-    type: material
-    material: demo:trapped_chest
+  # To define NBT data, use the block type entry.
+  T:
+    type: block
+    name: minecraft:trapped_chest
+    data:
+      Items:
+        - id: minecraft:diamond
+          Count: 1b
+          Slot: 13b
 
-# The layout is a 2D list of strings (a 3D list of characters) that says how to build
-# the structure, piece by piece, using the palette.
+# The layout is a 2-D list of strings (a 3-D list of characters) that says how to build
+# the structure, piece by piece, using the palette. Note that the first section of the
+# layout corresponds to the top-most layer of blocks in the structure.
 layout:
-  - - offfo
-    - fffff
-    - ffXff
-    - fffff
-    - offfo
+  - - ggggg
+    - ggggg
+    - ggggg
+    - ggggg
+    - ggggg
 
-  - - o___o
-    - _____
-    - __I__
-    - _____
-    - o___o
+  - - ggggg
+    - g___g
+    - g___g
+    - g___g
+    - ggggg
 
-  - - o___o
-    - _____
-    - __H__
-    - _____
-    - o___o
+  - - ggggg
+    - g___g
+    - g_T_g
+    - g___g
+    - ggggg
 
-  - - o___o
-    - _____
-    - _____
-    - _____
-    - o___o
+  - - cgggc
+    - g___g
+    - g_P_g
+    - g___g
+    - cgggc
 
-  - - occco
-    - ccccc
-    - ccccc
-    - ccccc
-    - occco
+  - - bbbbb
+    - bbbbb
+    - bbXbb
+    - bbbbb
+    - bbbbb
 ```
 
-### `demo:copper`
+This next example uses composition and a filter to include a modified version of another blueprint.
 
-This next example uses composition to include another blueprint within itself.
+![image](https://user-images.githubusercontent.com/1885643/118862891-3c456a80-b8ac-11eb-94a7-763484c12069.png)
 
-[![image](https://i.imgur.com/vo4pr9X.png)](https://i.imgur.com/KF57IKW.png)
+**`fleecy_box:copper`**
 
-`data/demo/blueprints/copper.yaml`
+[`data/fleecy_box/blueprints/copper.yaml`](https://github.com/Arcensoth/blueprints/blob/main/tests/datapacks/demo-datapack/data/fleecy_box/blueprints/copper.yaml)
 
 ```yaml
+# Make sure to account for any included structures in the final structure.
 size: [5, 5, 5]
 
 palette:
-  # The "B" stands for "base" here, but it can be whatever.
+  # Blueprints are composable. They can be included within one another, and the final
+  # structure will be a flattened version with a minimal palette.
   B:
     type: blueprint
-    blueprint: demo:bricks
+    blueprint: fleecy_box:base
     # A filter changes the way blocks are included from other blueprints.
-    filter: demo:copperize
+    filter: fleecy_box:copperize
 
 layout:
   - - B
 ```
 
-## Blueprint Filters
+Note the use of a filter: these can be used to change the way blocks are included from other blueprints.
 
-Filters can be used to change the way blocks are included from other blueprints.
+**`fleecy_box:copperize`**
 
-### `demo:copperize`
-
-`data/demo/blueprint_filters/copperize.yaml`
+[`data/fleecy_box/filters/copperize.yaml`](https://github.com/Arcensoth/blueprints/blob/main/tests/datapacks/demo-datapack/data/fleecy_box/filters/copperize.yaml)
 
 ```yaml
 # Replace one block with another block.
-- type: replace_block
-  input: minecraft:polished_andesite
-  output: minecraft:minecraft:cut_copper
-- type: replace_block
-  input: minecraft:stone_bricks
-  output: minecraft:minecraft:cut_copper
-- type: replace_block
-  input: minecraft:quartz_pillar
-  output: minecraft:copper_block
+- type: replace_blocks
+  blocks:
+    - minecraft:bricks
+  replacement: minecraft:cut_copper
+
+- type: replace_blocks
+  blocks:
+    - minecraft:glowstone
+    - minecraft:quartz_pillar
+  replacement: minecraft:copper_block
+
 # Keep only the listed blocks, discarding the rest.
 - type: keep_blocks
   blocks:
-    - minecraft:air
     - minecraft:copper_block
     - minecraft:cut_copper
-```
-
-## Materials
-
-Materials are centralized, reusable block definitions that can be managed from one place.
-
-### `demo:trapped_chest`
-
-`data/demo/materials/trapped_chest.yaml`
-
-```yaml
-block: minecraft:trapped_chest
-nbt:
-  Items:
-    - id: minecraft:diamond
-      Count: 1b
-      Slot: 13b
 ```
