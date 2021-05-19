@@ -4,8 +4,14 @@ from typing import Callable, Dict, List, Optional
 from pyckaxe import Breadcrumb, JsonValue, ResourceLocation
 
 from blueprints.lib.resource.filter.filter import Filter, FilterRule
+from blueprints.lib.resource.filter.rule.keep_blocks_filter_rule import (
+    KeepBlocksFilterRule,
+)
 from blueprints.lib.resource.filter.rule.keep_materials_filter_rule import (
     KeepMaterialsFilterRule,
+)
+from blueprints.lib.resource.filter.rule.replace_blocks_filter_rule import (
+    ReplaceBlocksFilterRule,
 )
 from blueprints.lib.resource.filter.rule.replace_materials_filter_rule import (
     ReplaceMaterialsFilterRule,
@@ -45,7 +51,9 @@ class FilterDeserializer:
 
     def __post_init__(self):
         self.rule_deserializers = {
+            "keep_blocks": self.deserialize_keep_blocks_rule,
             "keep_materials": self.deserialize_keep_materials_rule,
+            "replace_blocks": self.deserialize_replace_blocks_rule,
             "replace_materials": self.deserialize_replace_materials_rule,
         }
 
@@ -137,6 +145,33 @@ class FilterDeserializer:
 
         return rule
 
+    def deserialize_keep_blocks_rule(
+        self, raw_rule: Dict[str, JsonValue], breadcrumb: Breadcrumb
+    ) -> KeepBlocksFilterRule:
+        # blocks (required, non-nullable, no default)
+        raw_blocks = raw_rule.get("blocks")
+        breadcrumb_blocks = breadcrumb.blocks
+        if raw_blocks is None:
+            raise MalformedRule(
+                f"Missing `blocks`, at `{breadcrumb_blocks}`",
+                raw_rule,
+                breadcrumb_blocks,
+            )
+        if not isinstance(raw_blocks, list):
+            raise MalformedRule(
+                f"Malformed `blocks`, at `{breadcrumb_blocks}`",
+                raw_rule,
+                breadcrumb_blocks,
+            )
+        blocks = [
+            self.material_deserializer.deserialize_block(
+                raw_block, breadcrumb_blocks[i]
+            )
+            for i, raw_block in enumerate(raw_blocks)
+        ]
+
+        return KeepBlocksFilterRule(blocks=blocks)
+
     def deserialize_keep_materials_rule(
         self, raw_rule: Dict[str, JsonValue], breadcrumb: Breadcrumb
     ) -> KeepMaterialsFilterRule:
@@ -163,6 +198,46 @@ class FilterDeserializer:
         ]
 
         return KeepMaterialsFilterRule(materials=materials)
+
+    def deserialize_replace_blocks_rule(
+        self, raw_rule: Dict[str, JsonValue], breadcrumb: Breadcrumb
+    ) -> ReplaceBlocksFilterRule:
+        # blocks (required, non-nullable, no default)
+        raw_blocks = raw_rule.get("blocks")
+        breadcrumb_blocks = breadcrumb.blocks
+        if raw_blocks is None:
+            raise MalformedRule(
+                f"Missing `blocks`, at `{breadcrumb_blocks}`",
+                raw_rule,
+                breadcrumb_blocks,
+            )
+        if not isinstance(raw_blocks, list):
+            raise MalformedRule(
+                f"Malformed `blocks`, at `{breadcrumb_blocks}`",
+                raw_rule,
+                breadcrumb_blocks,
+            )
+        blocks = [
+            self.material_deserializer.deserialize_block(
+                raw_block, breadcrumb_blocks[i]
+            )
+            for i, raw_block in enumerate(raw_blocks)
+        ]
+
+        # replacement (required, non-nullable, no default)
+        raw_replacement = raw_rule.get("replacement")
+        breadcrumb_replacement = breadcrumb.replacement
+        if raw_replacement is None:
+            raise MalformedRule(
+                f"Missing `replacement`, at `{breadcrumb_replacement}`",
+                raw_rule,
+                breadcrumb_replacement,
+            )
+        replacement = self.material_deserializer.deserialize_block(
+            raw_replacement, breadcrumb_replacement
+        )
+
+        return ReplaceBlocksFilterRule(blocks=blocks, replacement=replacement)
 
     def deserialize_replace_materials_rule(
         self, raw_rule: Dict[str, JsonValue], breadcrumb: Breadcrumb

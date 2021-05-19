@@ -187,8 +187,7 @@ class BlueprintDeserializer:
     ) -> BlueprintPaletteEntry:
         # A string is assumed to be a basic block.
         if isinstance(raw_palette_entry, str):
-            block_name = raw_palette_entry
-            material = Material(Block(block_name))
+            material = Material(block=Block(name=raw_palette_entry))
             return MaterialBlueprintPaletteEntry(key=palette_key, material=material)
 
         # Otherwise we ought to have a concrete definition...

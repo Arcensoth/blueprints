@@ -54,9 +54,14 @@ class MaterialDeserializer:
         return Material(block=block)
 
     def deserialize_block(self, raw_block: JsonValue, breadcrumb: Breadcrumb) -> Block:
+        # A string is assumed to be a basic block.
+        if isinstance(raw_block, str):
+            return Block(name=raw_block)
+
+        # Otherwise we ought to have a concrete definition...
         if not isinstance(raw_block, dict):
             raise MalformedMaterial(
-                f"Malformed material, at `{breadcrumb}`", raw_block, breadcrumb
+                f"Malformed block, at `{breadcrumb}`", raw_block, breadcrumb
             )
 
         # name (required, non-nullable, no default)
