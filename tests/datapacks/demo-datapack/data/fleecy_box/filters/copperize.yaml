@@ -1,0 +1,17 @@
+# Replace one block with another block.
+- type: replace_blocks
+  blocks:
+    - minecraft:bricks
+  replacement: minecraft:cut_copper
+
+- type: replace_blocks
+  blocks:
+    - minecraft:glowstone
+    - minecraft:quartz_pillar
+  replacement: minecraft:copper_block
+
+# Keep only the listed blocks, discarding the rest.
+- type: keep_blocks
+  blocks:
+    - minecraft:copper_block
+    - minecraft:cut_copper

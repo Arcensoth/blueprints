@@ -1,0 +1,14 @@
+# Make sure to account for any included structures in the final structure.
+size: [5, 5, 5]
+
+palette:
+  # Blueprints are composable. They can be included within one another, and the final
+  # structure will be a flattened version with a minimal palette.
+  B:
+    type: blueprint
+    blueprint: fleecy_box:base
+    # A filter changes the way blocks are included from other blueprints.
+    filter: fleecy_box:copperize
+
+layout:
+  - - B
