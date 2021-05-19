@@ -2,7 +2,15 @@
 
 > Text-based structures for Minecraft.
 
-Blueprints are a text-based, human-readable/writable structure format. A blueprint compiles-down to a single NBT structure file that can be loaded with a structure block.
+Blueprints are a text-based structure format for Minecraft optimized for human-readability. A blueprint compiles-down to a single NBT structure file that can be loaded with a structure block.
+
+Here are some reasons you may want to use blueprints:
+
+- They can be diff'd and *properly* included in version control, unlike their NBT equivalent.
+- They are far smaller and less repetitive than their SNBT equivalent, which is often used for version control.
+- They can be expressed purely through text, without having to think about the underlying structure format (and without having to open the game).
+- They can be updated to (and optimized for) a newer version of the game, just by re-running the CLI with the `--data_version` argument.
+- They have the potential to take up significantly less space than their NBT equivalent, for codebases that take advantage of composition.
 
 ## Examples
 
