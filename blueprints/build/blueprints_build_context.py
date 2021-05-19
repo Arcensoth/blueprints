@@ -27,6 +27,7 @@ from pyckaxe import (
     UnboundedResourceCache,
     WritablePack,
 )
+from pyckaxe.utils import walk_exception
 
 from blueprints.lib import (
     Blueprint,
@@ -226,12 +227,18 @@ class BlueprintsBuildContext:
 
         # Let the user know that processing is finished and whether it was successful.
         if self.build_errors:
-            self.log.critical(
+            self.log.error(
                 f"Failed to finish building pack {self}"
                 + f" with {len(self.build_errors)} errors:"
             )
             for i, error in enumerate(self.build_errors):
-                self.log.error(f"  [{i + 1}] {error}")
+                prefix = f"  [{i + 1}] "
+                pad = len(prefix) * " "
+                self.log.error(f"{prefix}{error}")
+                causes = list(walk_exception(error))
+                for cause in causes[:-1]:
+                    self.log.error(f"{pad}├ {cause}")
+                self.log.error(f"{pad}└ {causes[-1]}")
         else:
             self.log.info(f"Finished building pack {self}")
 
