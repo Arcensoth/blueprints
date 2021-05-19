@@ -134,24 +134,20 @@ class BlueprintDeserializer:
         return blueprint
 
     def deserialize_size(self, raw_size: JsonValue, breadcrumb: Breadcrumb) -> Position:
-        try:
-            assert isinstance(raw_size, list)
-            return ~Position.from_list(cast(Any, raw_size))
-        except Exception as ex:
+        if not isinstance(raw_size, list):
             raise MalformedBlueprint(
                 f"Malformed `size`, at `{breadcrumb}`", raw_size, breadcrumb
-            ) from ex
+            )
+        return ~Position.from_list(cast(Any, raw_size))
 
     def deserialize_anchor(
         self, raw_anchor: JsonValue, breadcrumb: Breadcrumb
     ) -> Position:
-        try:
-            assert isinstance(raw_anchor, list)
-            return ~Position.from_list(cast(Any, raw_anchor))
-        except Exception as ex:
+        if not isinstance(raw_anchor, list):
             raise MalformedBlueprint(
                 f"Malformed `anchor`, at `{breadcrumb}`", raw_anchor, breadcrumb
-            ) from ex
+            )
+        return ~Position.from_list(cast(Any, raw_anchor))
 
     def deserialize_palette(
         self, raw_palette: JsonValue, breadcrumb: Breadcrumb
@@ -221,7 +217,7 @@ class BlueprintDeserializer:
 
         if not palette_entry_deserializer:
             raise MalformedPaletteEntry(
-                f"Unknown `type` `{palette_entry_type}`, at `{breadcrumb_type}`",
+                f"Unknown type `{palette_entry_type}`, at `{breadcrumb_type}`",
                 raw_palette_entry,
                 breadcrumb,
             )
@@ -263,15 +259,13 @@ class BlueprintDeserializer:
         # offset (optional, non-nullable, has a default)
         offset: Position = HERE
         if raw_offset := raw_palette_entry.get("offset"):
-            try:
-                assert isinstance(raw_offset, list)
-                offset = ~Position.from_list(cast(Any, raw_offset))
-            except Exception as ex:
+            if not isinstance(raw_offset, list):
                 raise MalformedBlueprint(
                     f"Malformed `offset`, at `{breadcrumb.offset}`",
                     raw_offset,
                     breadcrumb.offset,
-                ) from ex
+                )
+            offset = ~Position.from_list(cast(Any, raw_offset))
 
         # filter (optional, nullable, defaults to null)
         filter: Optional[FilterOrLocation] = None

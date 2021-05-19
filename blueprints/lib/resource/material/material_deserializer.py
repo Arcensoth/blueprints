@@ -94,21 +94,17 @@ class MaterialDeserializer:
     def deserialize_state(
         self, raw_state: JsonValue, breadcrumb: Breadcrumb
     ) -> BlockState:
-        try:
-            assert isinstance(raw_state, dict)
-            return BlockState(**raw_state)
-        except Exception as ex:
+        if not isinstance(raw_state, dict):
             raise MalformedMaterial(
                 f"Malformed `state`, at `{breadcrumb}`", raw_state, breadcrumb
-            ) from ex
+            )
+        return BlockState(**raw_state)
 
     def deserialize_data(
         self, raw_data: JsonValue, breadcrumb: Breadcrumb
     ) -> NbtCompound:
-        try:
-            assert isinstance(raw_data, dict)
-            return to_nbt_compound(raw_data)
-        except Exception as ex:
+        if not isinstance(raw_data, dict):
             raise MalformedMaterial(
                 f"Malformed `data`, at `{breadcrumb}`", raw_data, breadcrumb
-            ) from ex
+            )
+        return to_nbt_compound(raw_data)

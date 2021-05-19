@@ -125,7 +125,7 @@ class FilterDeserializer:
 
         if not rule_deserializer:
             raise MalformedRule(
-                f"Unknown `type` `{rule_type}`, at `{breadcrumb_type}`",
+                f"Unknown type `{rule_type}`, at `{breadcrumb_type}`",
                 raw_rule,
                 breadcrumb,
             )
