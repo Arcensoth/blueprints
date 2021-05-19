@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional, cast
 
 from pyckaxe import HERE, Block, Breadcrumb, JsonValue, Position, ResourceLocation
@@ -57,6 +57,18 @@ class MalformedPaletteEntry(BlueprintDeserializationException):
 class BlueprintDeserializer:
     filter_deserializer: FilterDeserializer
     material_deserializer: MaterialDeserializer
+
+    palette_entry_deserializers: Dict[
+        str, Callable[[str, Dict[str, JsonValue], Breadcrumb], BlueprintPaletteEntry]
+    ] = field(init=False)
+
+    def __post_init__(self):
+        self.palette_entry_deserializers = {
+            "block": self.deserialize_block_palette_entry,
+            "blueprint": self.deserialize_blueprint_palette_entry,
+            "material": self.deserialize_material_palette_entry,
+            "void": self.deserialize_void_palette_entry,
+        }
 
     # @implements ResourceDeserializer
     def __call__(
@@ -203,17 +215,9 @@ class BlueprintDeserializer:
                 breadcrumb_type,
             )
 
-        palette_entry_deserializers: Dict[
-            str,
-            Callable[[str, Dict[str, JsonValue], Breadcrumb], BlueprintPaletteEntry],
-        ] = {
-            "block": self.deserialize_block_palette_entry,
-            "blueprint": self.deserialize_blueprint_palette_entry,
-            "material": self.deserialize_material_palette_entry,
-            "void": self.deserialize_void_palette_entry,
-        }
-
-        palette_entry_deserializer = palette_entry_deserializers.get(palette_entry_type)
+        palette_entry_deserializer = self.palette_entry_deserializers.get(
+            palette_entry_type
+        )
 
         if not palette_entry_deserializer:
             raise MalformedPaletteEntry(

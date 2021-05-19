@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Callable, Dict, List, Optional
 
 from pyckaxe import Breadcrumb, JsonValue, ResourceLocation
@@ -38,6 +38,16 @@ class MalformedRule(FilterDeserializationException):
 @dataclass
 class FilterDeserializer:
     material_deserializer: MaterialDeserializer
+
+    rule_deserializers: Dict[
+        str, Callable[[Dict[str, JsonValue], Breadcrumb], FilterRule]
+    ] = field(init=False)
+
+    def __post_init__(self):
+        self.rule_deserializers = {
+            "keep_materials": self.deserialize_keep_materials_rule,
+            "replace_materials": self.deserialize_replace_materials_rule,
+        }
 
     # @implements ResourceDeserializer
     def __call__(
@@ -114,14 +124,7 @@ class FilterDeserializer:
                 f"Malformed `type`, at `{breadcrumb_type}`", raw_rule, breadcrumb_type
             )
 
-        rule_deserializers: Dict[
-            str, Callable[[Dict[str, JsonValue], Breadcrumb], FilterRule]
-        ] = {
-            "keep_materials": self.deserialize_keep_materials_rule,
-            "replace_materials": self.deserialize_replace_materials_rule,
-        }
-
-        rule_deserializer = rule_deserializers.get(rule_type)
+        rule_deserializer = self.rule_deserializers.get(rule_type)
 
         if not rule_deserializer:
             raise MalformedRule(
