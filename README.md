@@ -1,12 +1,14 @@
-# blueprints
+![logo]
 
-> A text-based Minecraft structure format optimized for human-readability.
+# Blueprints
+
+> Text-based structures for Minecraft.
 
 [![package-badge]](https://pypi.python.org/pypi/blueprints/)
 [![version-badge]](https://pypi.python.org/pypi/blueprints/)
 [![style-badge]](https://github.com/ambv/black)
 
-Blueprints are a text-based Minecraft structure format optimized for human-readability. A blueprint compiles-down to a single NBT structure file that can be loaded with a structure block.
+Blueprints are a text-based structure format for Minecraft optimized for human-readability. A blueprint compiles-down to a single NBT structure file that can be loaded with a structure block.
 
 Here are some reasons you may want to use blueprints:
 
@@ -150,6 +152,7 @@ Note the use of a filter: these can be used to change the way blocks are include
     - minecraft:cut_copper
 ```
 
+[logo]: ./logo.png
 [package-badge]: https://img.shields.io/pypi/v/blueprints.svg
 [version-badge]: https://img.shields.io/pypi/pyversions/blueprints.svg
 [style-badge]: https://img.shields.io/badge/code%20style-black-000000.svg
