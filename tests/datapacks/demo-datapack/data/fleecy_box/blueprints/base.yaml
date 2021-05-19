@@ -32,7 +32,8 @@ palette:
           Slot: 13b
 
 # The layout is a 2-D list of strings (a 3-D list of characters) that says how to build
-# the structure, piece by piece, using the palette.
+# the structure, piece by piece, using the palette. Note that the first section of the
+# layout corresponds to the top-most layer of blocks in the structure.
 layout:
   - - ggggg
     - ggggg
