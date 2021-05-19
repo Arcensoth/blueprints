@@ -7,7 +7,7 @@ license = "MIT"
 readme = 'README.md'
 repository = "https://github.com/Arcensoth/blueprints"
 homepage = "https://github.com/Arcensoth/blueprints"
-keywords = ["minecraft", "structures", "blueprints", "datapack"]
+keywords = ["minecraft", "structures", "blueprints", "datapacks"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
