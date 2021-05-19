@@ -178,24 +178,19 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
 name = "pyckaxe"
-version = "0.1.0"
+version = "0.2.0"
 description = "An expressive Minecraft utility library revolving around data manipulation and generation."
 category = "main"
 optional = false
-python-versions = "^3.8"
-develop = true
+python-versions = ">=3.8,<4.0"
 
 [package.dependencies]
-click = "^7.1.2"
-nbtlib = "^1.12.0"
+click = ">=7.1.2,<8.0.0"
+nbtlib = ">=1.12.0,<2.0.0"
 
 [package.extras]
 colors = ["colorama (>=0.4.3,<0.5.0)", "colorlog (>=4.2.1,<5.0.0)"]
 yaml = ["pyyaml (>=5.3.1,<6.0.0)"]
-
-[package.source]
-type = "directory"
-url = "../pyckaxe"
 
 [[package]]
 name = "pyparsing"
@@ -283,7 +278,7 @@ yaml = ["pyyaml"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "a9ac9cc1b21fb40e49b1f2e83c2be74f2afe92ba5ba13fdda61f023cf0035725"
+content-hash = "c8d8c4720e741024a4f365ae93e1324795f0f9111ab4b1032cef827fb6500d6c"
 
 [metadata.files]
 appdirs = [
@@ -426,7 +421,10 @@ py = [
     {file = "py-1.10.0-py2.py3-none-any.whl", hash = "sha256:3b80836aa6d1feeaa108e046da6423ab8f6ceda6468545ae8d02d9d58d18818a"},
     {file = "py-1.10.0.tar.gz", hash = "sha256:21b81bda15b66ef5e1a777a21c4dcd9c20ad3efd0b3f817e7a809035269e1bd3"},
 ]
-pyckaxe = []
+pyckaxe = [
+    {file = "pyckaxe-0.2.0-py3-none-any.whl", hash = "sha256:ec011ab66a2e2c9ff95585fe13e6fcb091d5de78154ca816b52a97dfb5db160d"},
+    {file = "pyckaxe-0.2.0.tar.gz", hash = "sha256:3c84beeb2e036be0aeb3f40d8c5b97dda2769e8abf47b9b67593ae24559b247b"},
+]
 pyparsing = [
     {file = "pyparsing-2.4.7-py2.py3-none-any.whl", hash = "sha256:ef9d7589ef3c200abe66653d3f1ab1033c3c419ae9b9bdb1240a85b024efc88b"},
     {file = "pyparsing-2.4.7.tar.gz", hash = "sha256:c203ec8783bf771a155b207279b9bccb8dea02d8f0c9e5f8ead507bc3246ecc1"},
