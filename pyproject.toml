@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "blueprints"
 version = "0.1.0"
-description = "Text-based structures for Minecraft."
+description = "A text-based Minecraft structure format optimized for human-readability."
 authors = ["Arcensoth <arcensoth@gmail.com>"]
 license = "MIT"
 readme = 'README.md'
