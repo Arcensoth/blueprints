@@ -18,11 +18,13 @@ Here are some reasons you may want to use blueprints:
 - They can be updated to (and optimized for) a newer version of the game, just by re-running the CLI with the `--data_version` argument.
 - They have the potential to take up significantly less space than their NBT equivalent, for codebases that take advantage of composition.
 
+Keep in mind that - although they are optimized for human-readbility - blueprints aren't nearly as "hands-on" as editing structures in-game. There are pros and cons to either approach, and the case for blueprints should be weighed carefully based on project size and complexity.
+
 ## Usage
 
 Blueprints are created and maintained in the same way as vanilla resources, but under a made-up `blueprints` folder.
 
-See the [examples] and the [demo pack](https://github.com/Arcensoth/blueprints/tree/main/tests/datapacks/demo-datapack/data) for reference.
+See the [examples](#examples) and the [demo pack](https://github.com/Arcensoth/blueprints/tree/main/tests/datapacks/demo-datapack/data) for reference.
 
 The most basic invocation of the CLI looks like this:
 
