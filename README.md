@@ -173,6 +173,6 @@ Note the use of a filter: these can be used to change the way blocks are include
 ```
 
 [logo]: ./logo.png
-[package-badge]: https://img.shields.io/pypi/v/blueprints.svg
-[version-badge]: https://img.shields.io/pypi/pyversions/blueprints.svg
+[package-badge]: https://img.shields.io/pypi/v/mcblueprints.svg
+[version-badge]: https://img.shields.io/pypi/pyversions/mcblueprints.svg
 [style-badge]: https://img.shields.io/badge/code%20style-black-000000.svg
