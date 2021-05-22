@@ -3,8 +3,8 @@ from typing import List
 
 from pyckaxe import BlockMap, ResolutionContext
 
-from blueprints.lib.resource.filter.rule.abc.filter_rule import FilterRule
-from blueprints.lib.resource.material.types import MaterialOrLocation
+from mcblueprints.lib.resource.filter.rule.abc.filter_rule import FilterRule
+from mcblueprints.lib.resource.material.types import MaterialOrLocation
 
 __all__ = ("ReplaceMaterialsFilterRule",)
 

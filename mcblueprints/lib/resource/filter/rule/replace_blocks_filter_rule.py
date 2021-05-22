@@ -3,7 +3,7 @@ from typing import List
 
 from pyckaxe import Block, BlockMap, ResolutionContext
 
-from blueprints.lib.resource.filter.rule.abc.filter_rule import FilterRule
+from mcblueprints.lib.resource.filter.rule.abc.filter_rule import FilterRule
 
 __all__ = ("ReplaceBlocksFilterRule",)
 

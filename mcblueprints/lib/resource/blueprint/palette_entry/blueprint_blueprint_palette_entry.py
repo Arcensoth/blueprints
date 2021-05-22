@@ -3,11 +3,11 @@ from typing import Optional
 
 from pyckaxe import BlockMap, Position, ResolutionContext
 
-from blueprints.lib.resource.blueprint.palette_entry.abc.blueprint_palette_entry import (
+from mcblueprints.lib.resource.blueprint.palette_entry.abc.blueprint_palette_entry import (
     BlueprintPaletteEntry,
 )
-from blueprints.lib.resource.blueprint.types import BlueprintOrLocation
-from blueprints.lib.resource.filter.types import FilterOrLocation
+from mcblueprints.lib.resource.blueprint.types import BlueprintOrLocation
+from mcblueprints.lib.resource.filter.types import FilterOrLocation
 
 __all__ = ("BlueprintBlueprintPaletteEntry",)
 

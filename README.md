@@ -4,8 +4,8 @@
 
 > Text-based structures for Minecraft.
 
-[![package-badge]](https://pypi.python.org/pypi/blueprints/)
-[![version-badge]](https://pypi.python.org/pypi/blueprints/)
+[![package-badge]](https://pypi.python.org/pypi/mcblueprints/)
+[![version-badge]](https://pypi.python.org/pypi/mcblueprints/)
 [![style-badge]](https://github.com/ambv/black)
 
 Blueprints are a text-based structure format for Minecraft optimized for human-readability. A blueprint compiles-down to a single NBT structure file that can be loaded with a structure block.
@@ -36,7 +36,7 @@ python -m blueprints build --input path/to/input/pack --output path/to/output/pa
 - `--output` is the path to the output pack. This is where the generated structures files will be placed. This can be the same as the input pack, but beware of overwriting existing files.
 - `--data_version` is required and `2715` should be replaced with the [version of the game](https://minecraft.fandom.com/wiki/Data_version#List_of_data_versions) you are targeting.
 
-Run `python -m blueprints build --help` for a complete list of options.
+Run `python -m mcblueprints build --help` for a complete list of options.
 
 ## Examples
 

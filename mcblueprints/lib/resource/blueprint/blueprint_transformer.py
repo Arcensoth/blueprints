@@ -3,10 +3,10 @@ from typing import AsyncIterable, Optional, Tuple, TypeVar
 
 from pyckaxe import Namespace, Resource, ResourceLocation, Structure, StructureLocation
 
-from blueprints.lib.resource.blueprint.palette_entry.abc.blueprint_palette_entry import (
+from mcblueprints.lib.resource.blueprint.palette_entry.abc.blueprint_palette_entry import (
     BlueprintPaletteEntry,
 )
-from blueprints.lib.resource.blueprint.types import BlueprintProcessingContext
+from mcblueprints.lib.resource.blueprint.types import BlueprintProcessingContext
 
 __all__ = ("BlueprintTransformer",)
 

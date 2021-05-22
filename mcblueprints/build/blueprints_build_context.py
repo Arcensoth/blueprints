@@ -29,7 +29,7 @@ from pyckaxe import (
 )
 from pyckaxe.utils import walk_exception
 
-from blueprints.lib import (
+from mcblueprints.lib import (
     Blueprint,
     BlueprintDeserializer,
     BlueprintTransformer,

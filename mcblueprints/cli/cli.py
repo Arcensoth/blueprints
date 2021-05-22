@@ -5,8 +5,8 @@ import click
 from pyckaxe.cli.utils import asyncify
 from pyckaxe.utils import LOG_LEVELS, setup_logging
 
-from blueprints import __version__
-from blueprints.build.blueprints_build_context import (
+from mcblueprints import __version__
+from mcblueprints.build.blueprints_build_context import (
     DEFAULT_BLUEPRINT_CACHE_SIZE,
     DEFAULT_BLUEPRINTS_REGISTRY,
     DEFAULT_FILTER_CACHE_SIZE,
@@ -21,7 +21,7 @@ from blueprints.build.blueprints_build_context import (
 __all__ = ("run",)
 
 
-PROG_NAME = "blueprints"
+PROG_NAME = "mcblueprints"
 
 
 @click.group()
@@ -45,7 +45,7 @@ def cli(log: str, detailed_logs: bool):
 
 @cli.command(
     "build",
-    help="Build Minecraft structures from blueprints.",
+    help="Build Minecraft structures from mcblueprints.",
 )
 @click.option(
     "--input",

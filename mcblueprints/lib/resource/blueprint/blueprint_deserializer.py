@@ -3,31 +3,33 @@ from typing import Any, Callable, Dict, List, Optional, cast
 
 from pyckaxe import HERE, Block, Breadcrumb, JsonValue, Position, ResourceLocation
 
-from blueprints.lib.resource.blueprint.blueprint import (
+from mcblueprints.lib.resource.blueprint.blueprint import (
     Blueprint,
     BlueprintLayout,
     BlueprintPalette,
 )
-from blueprints.lib.resource.blueprint.palette_entry.abc.blueprint_palette_entry import (
+from mcblueprints.lib.resource.blueprint.palette_entry.abc.blueprint_palette_entry import (
     BlueprintPaletteEntry,
 )
-from blueprints.lib.resource.blueprint.palette_entry.block_blueprint_palette_entry import (
+from mcblueprints.lib.resource.blueprint.palette_entry.block_blueprint_palette_entry import (
     BlockBlueprintPaletteEntry,
 )
-from blueprints.lib.resource.blueprint.palette_entry.blueprint_blueprint_palette_entry import (
+from mcblueprints.lib.resource.blueprint.palette_entry.blueprint_blueprint_palette_entry import (
     BlueprintBlueprintPaletteEntry,
 )
-from blueprints.lib.resource.blueprint.palette_entry.material_blueprint_palette_entry import (
+from mcblueprints.lib.resource.blueprint.palette_entry.material_blueprint_palette_entry import (
     MaterialBlueprintPaletteEntry,
 )
-from blueprints.lib.resource.blueprint.palette_entry.void_blueprint_palette_entry import (
+from mcblueprints.lib.resource.blueprint.palette_entry.void_blueprint_palette_entry import (
     VoidBlueprintPaletteEntry,
 )
-from blueprints.lib.resource.blueprint.types import BlueprintOrLocation
-from blueprints.lib.resource.filter.filter_deserializer import FilterDeserializer
-from blueprints.lib.resource.filter.types import FilterOrLocation
-from blueprints.lib.resource.material.material import Material
-from blueprints.lib.resource.material.material_deserializer import MaterialDeserializer
+from mcblueprints.lib.resource.blueprint.types import BlueprintOrLocation
+from mcblueprints.lib.resource.filter.filter_deserializer import FilterDeserializer
+from mcblueprints.lib.resource.filter.types import FilterOrLocation
+from mcblueprints.lib.resource.material.material import Material
+from mcblueprints.lib.resource.material.material_deserializer import (
+    MaterialDeserializer,
+)
 
 __all__ = ("BlueprintDeserializer",)
 

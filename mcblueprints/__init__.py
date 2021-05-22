@@ -2,4 +2,4 @@ from importlib.metadata import version
 
 from .lib import *
 
-__version__ = version("blueprints")
+__version__ = version("mcblueprints")

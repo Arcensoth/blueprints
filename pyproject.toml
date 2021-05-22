@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "blueprints"
+name = "mcblueprints"
 version = "0.1.0"
 description = "Text-based structures for Minecraft."
 authors = ["Arcensoth <arcensoth@gmail.com>"]

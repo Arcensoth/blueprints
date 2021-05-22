@@ -2,7 +2,7 @@ from typing import Union
 
 from pyckaxe import ClassifiedResourceLocation, ResourceProcessingContext
 
-from blueprints.lib.resource.material.material import Material
+from mcblueprints.lib.resource.material.material import Material
 
 MaterialLocation = ClassifiedResourceLocation[Material]
 MaterialOrLocation = Union[Material, MaterialLocation]

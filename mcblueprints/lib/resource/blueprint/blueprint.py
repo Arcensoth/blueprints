@@ -3,7 +3,7 @@ from typing import Dict, Iterable, List
 
 from pyckaxe import BlockMap, Position, ResolutionContext, Resource, Structure
 
-from blueprints.lib.resource.blueprint.palette_entry.abc.blueprint_palette_entry import (
+from mcblueprints.lib.resource.blueprint.palette_entry.abc.blueprint_palette_entry import (
     BlueprintPaletteEntry,
 )
 

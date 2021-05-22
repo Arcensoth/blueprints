@@ -3,21 +3,23 @@ from typing import Callable, Dict, List, Optional
 
 from pyckaxe import Breadcrumb, JsonValue, ResourceLocation
 
-from blueprints.lib.resource.filter.filter import Filter, FilterRule
-from blueprints.lib.resource.filter.rule.keep_blocks_filter_rule import (
+from mcblueprints.lib.resource.filter.filter import Filter, FilterRule
+from mcblueprints.lib.resource.filter.rule.keep_blocks_filter_rule import (
     KeepBlocksFilterRule,
 )
-from blueprints.lib.resource.filter.rule.keep_materials_filter_rule import (
+from mcblueprints.lib.resource.filter.rule.keep_materials_filter_rule import (
     KeepMaterialsFilterRule,
 )
-from blueprints.lib.resource.filter.rule.replace_blocks_filter_rule import (
+from mcblueprints.lib.resource.filter.rule.replace_blocks_filter_rule import (
     ReplaceBlocksFilterRule,
 )
-from blueprints.lib.resource.filter.rule.replace_materials_filter_rule import (
+from mcblueprints.lib.resource.filter.rule.replace_materials_filter_rule import (
     ReplaceMaterialsFilterRule,
 )
-from blueprints.lib.resource.filter.types import FilterOrLocation
-from blueprints.lib.resource.material.material_deserializer import MaterialDeserializer
+from mcblueprints.lib.resource.filter.types import FilterOrLocation
+from mcblueprints.lib.resource.material.material_deserializer import (
+    MaterialDeserializer,
+)
 
 __all__ = ("FilterDeserializer",)
 

@@ -11,8 +11,8 @@ from pyckaxe import (
     to_nbt_compound,
 )
 
-from blueprints.lib.resource.material.material import Material
-from blueprints.lib.resource.material.types import MaterialOrLocation
+from mcblueprints.lib.resource.material.material import Material
+from mcblueprints.lib.resource.material.types import MaterialOrLocation
 
 __all__ = ("MaterialDeserializer",)
 

@@ -2,10 +2,10 @@ from dataclasses import dataclass
 
 from pyckaxe import BlockMap, Position, ResolutionContext
 
-from blueprints.lib.resource.blueprint.palette_entry.abc.blueprint_palette_entry import (
+from mcblueprints.lib.resource.blueprint.palette_entry.abc.blueprint_palette_entry import (
     BlueprintPaletteEntry,
 )
-from blueprints.lib.resource.material.types import MaterialOrLocation
+from mcblueprints.lib.resource.material.types import MaterialOrLocation
 
 __all__ = ("MaterialBlueprintPaletteEntry",)
 
