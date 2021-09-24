@@ -29,12 +29,12 @@ See the [examples](#examples) and the [demo pack](https://github.com/Arcensoth/b
 The most basic invocation of the CLI looks like this:
 
 ```bash
-python -m blueprints build --input path/to/input/pack --output path/to/output/pack --data_version 2715
+python -m blueprints build --input path/to/input/pack --output path/to/output/pack --data_version 2730
 ```
 
 - `--input` is the path to the input pack. This is where your blueprints reside.
 - `--output` is the path to the output pack. This is where the generated structures files will be placed. This can be the same as the input pack, but beware of overwriting existing files.
-- `--data_version` is required and `2715` should be replaced with the [version of the game](https://minecraft.fandom.com/wiki/Data_version#List_of_data_versions) you are targeting.
+- `--data_version` is required and `2730` should be replaced with the [version of the game](https://minecraft.fandom.com/wiki/Data_version#List_of_data_versions) you are targeting.
 
 Run `python -m mcblueprints build --help` for a complete list of options.
 
