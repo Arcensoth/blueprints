@@ -23,8 +23,6 @@ class BlueprintTransformer:
 
     Attributes
     ----------
-    structure_serializer
-        The structure serializer to use, including data version.
     generated_namespace
         A separate namespace to use for generated resources.
     generated_prefix_parts
