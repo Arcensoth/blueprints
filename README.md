@@ -162,7 +162,6 @@ Note the use of a filter: these can be used to change the way blocks are include
 - type: replace_blocks
   blocks:
     - minecraft:glowstone
-    - minecraft:quartz_pillar
   replacement: minecraft:copper_block
 
 # Keep only the listed blocks, discarding the rest.

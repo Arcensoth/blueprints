@@ -7,7 +7,6 @@
 - type: replace_blocks
   blocks:
     - minecraft:glowstone
-    - minecraft:quartz_pillar
   replacement: minecraft:copper_block
 
 # Keep only the listed blocks, discarding the rest.
