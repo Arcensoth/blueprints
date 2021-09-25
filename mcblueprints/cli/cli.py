@@ -6,7 +6,8 @@ from pyckaxe.cli.utils import asyncify
 from pyckaxe.utils import LOG_LEVELS, setup_logging
 
 from mcblueprints import __version__
-from mcblueprints.build.blueprints_build_context import (
+from mcblueprints.build.blueprints_build_context import BlueprintsBuildContext
+from mcblueprints.build.blueprints_build_options import (
     DEFAULT_BLUEPRINT_CACHE_SIZE,
     DEFAULT_BLUEPRINTS_REGISTRY,
     DEFAULT_FILTER_CACHE_SIZE,
@@ -15,7 +16,7 @@ from mcblueprints.build.blueprints_build_context import (
     DEFAULT_MATCH_FILES,
     DEFAULT_MATERIAL_CACHE_SIZE,
     DEFAULT_MATERIALS_REGISTRY,
-    BlueprintsBuildContext,
+    BlueprintsBuildOptions,
 )
 
 __all__ = ("run",)
@@ -141,7 +142,8 @@ def cli(log: str, detailed_logs: bool):
 @asyncify
 async def cli_build(**kwargs: Any):
     filtered_args = {k: v for k, v in kwargs.items() if v is not None}
-    ctx = BlueprintsBuildContext(**filtered_args)
+    options = BlueprintsBuildOptions(**filtered_args)
+    ctx = BlueprintsBuildContext(options)
     await ctx.build()
 
 
