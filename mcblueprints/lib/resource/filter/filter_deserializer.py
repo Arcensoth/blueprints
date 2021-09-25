@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
-from typing import Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional
 
-from pyckaxe import Breadcrumb, JsonValue, ResourceLocation
+from pyckaxe import Breadcrumb, ResourceLocation
 
 from mcblueprints.lib.resource.filter.filter import Filter, FilterRule
 from mcblueprints.lib.resource.filter.rule.keep_blocks_filter_rule import (
@@ -29,26 +29,26 @@ class FilterDeserializationException(Exception):
 
 
 class MalformedFilter(FilterDeserializationException):
-    def __init__(self, message: str, raw_filter: JsonValue, breadcrumb: Breadcrumb):
-        self.raw_filter: JsonValue = raw_filter
+    def __init__(self, message: str, raw_filter: Any, breadcrumb: Breadcrumb):
+        self.raw_filter: Any = raw_filter
         self.breadcrumb: Breadcrumb = breadcrumb
         super().__init__(message)
 
 
 class MalformedRule(FilterDeserializationException):
-    def __init__(self, message: str, raw_rule: JsonValue, breadcrumb: Breadcrumb):
+    def __init__(self, message: str, raw_rule: Any, breadcrumb: Breadcrumb):
         self.raw_rule = raw_rule
         self.breadcrumb: Breadcrumb = breadcrumb
         super().__init__(message)
 
 
-# @implements ResourceDeserializer[JsonValue, Filter]
+# @implements ResourceDeserializer[Any, Filter]
 @dataclass
 class FilterDeserializer:
     material_deserializer: MaterialDeserializer
 
     rule_deserializers: Dict[
-        str, Callable[[Dict[str, JsonValue], Breadcrumb], FilterRule]
+        str, Callable[[Dict[str, Any], Breadcrumb], FilterRule]
     ] = field(init=False)
 
     def __post_init__(self):
@@ -62,13 +62,13 @@ class FilterDeserializer:
     # @implements ResourceDeserializer
     def __call__(
         self,
-        raw: JsonValue,
+        raw: Any,
         *,
         breadcrumb: Optional[Breadcrumb] = None,
     ) -> Filter:
         return self.deserialize(raw, breadcrumb or Breadcrumb())
 
-    def or_location(self, raw: JsonValue, breadcrumb: Breadcrumb) -> FilterOrLocation:
+    def or_location(self, raw: Any, breadcrumb: Breadcrumb) -> FilterOrLocation:
         """Deserialize a `Filter` or `FilterLocation` from a raw value."""
         # A string is assumed to be a resource location.
         if isinstance(raw, str):
@@ -76,7 +76,7 @@ class FilterDeserializer:
         # Anything else is assumed to be a serialized resource.
         return self(raw, breadcrumb=breadcrumb)
 
-    def deserialize(self, raw_filter: JsonValue, breadcrumb: Breadcrumb) -> Filter:
+    def deserialize(self, raw_filter: Any, breadcrumb: Breadcrumb) -> Filter:
         """Deserialize a `Filter` from a raw value."""
         if isinstance(raw_filter, dict):
             # rules (required, non-nullable, no default)
@@ -103,7 +103,7 @@ class FilterDeserializer:
         return filter
 
     def deserialize_rules(
-        self, raw_rules: JsonValue, breadcrumb: Breadcrumb
+        self, raw_rules: Any, breadcrumb: Breadcrumb
     ) -> List[FilterRule]:
         if not isinstance(raw_rules, list):
             raise MalformedFilter(
@@ -115,9 +115,7 @@ class FilterDeserializer:
         ]
         return rules
 
-    def deserialize_rule(
-        self, raw_rule: JsonValue, breadcrumb: Breadcrumb
-    ) -> FilterRule:
+    def deserialize_rule(self, raw_rule: Any, breadcrumb: Breadcrumb) -> FilterRule:
         if not isinstance(raw_rule, dict):
             raise MalformedRule(
                 f"Malformed rule, at `{breadcrumb}`", raw_rule, breadcrumb
@@ -148,7 +146,7 @@ class FilterDeserializer:
         return rule
 
     def deserialize_keep_blocks_rule(
-        self, raw_rule: Dict[str, JsonValue], breadcrumb: Breadcrumb
+        self, raw_rule: Dict[str, Any], breadcrumb: Breadcrumb
     ) -> KeepBlocksFilterRule:
         # blocks (required, non-nullable, no default)
         raw_blocks = raw_rule.get("blocks")
@@ -175,7 +173,7 @@ class FilterDeserializer:
         return KeepBlocksFilterRule(blocks=blocks)
 
     def deserialize_keep_materials_rule(
-        self, raw_rule: Dict[str, JsonValue], breadcrumb: Breadcrumb
+        self, raw_rule: Dict[str, Any], breadcrumb: Breadcrumb
     ) -> KeepMaterialsFilterRule:
         # materials (required, non-nullable, no default)
         raw_materials = raw_rule.get("materials")
@@ -202,7 +200,7 @@ class FilterDeserializer:
         return KeepMaterialsFilterRule(materials=materials)
 
     def deserialize_replace_blocks_rule(
-        self, raw_rule: Dict[str, JsonValue], breadcrumb: Breadcrumb
+        self, raw_rule: Dict[str, Any], breadcrumb: Breadcrumb
     ) -> ReplaceBlocksFilterRule:
         # blocks (required, non-nullable, no default)
         raw_blocks = raw_rule.get("blocks")
@@ -242,7 +240,7 @@ class FilterDeserializer:
         return ReplaceBlocksFilterRule(blocks=blocks, replacement=replacement)
 
     def deserialize_replace_materials_rule(
-        self, raw_rule: Dict[str, JsonValue], breadcrumb: Breadcrumb
+        self, raw_rule: Dict[str, Any], breadcrumb: Breadcrumb
     ) -> ReplaceMaterialsFilterRule:
         # materials (required, non-nullable, no default)
         raw_materials = raw_rule.get("materials")

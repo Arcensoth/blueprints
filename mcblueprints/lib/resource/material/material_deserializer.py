@@ -1,11 +1,10 @@
 from dataclasses import dataclass
-from typing import Optional
+from typing import Any, Optional
 
 from pyckaxe import (
     Block,
     BlockState,
     Breadcrumb,
-    JsonValue,
     NbtCompound,
     ResourceLocation,
     to_nbt_compound,
@@ -22,25 +21,25 @@ class MaterialDeserializationException(Exception):
 
 
 class MalformedMaterial(MaterialDeserializationException):
-    def __init__(self, message: str, raw_material: JsonValue, breadcrumb: Breadcrumb):
-        self.raw_material: JsonValue = raw_material
+    def __init__(self, message: str, raw_material: Any, breadcrumb: Breadcrumb):
+        self.raw_material: Any = raw_material
         self.breadcrumb: Breadcrumb = breadcrumb
         super().__init__(message)
 
 
-# @implements ResourceDeserializer[JsonValue, Material]
+# @implements ResourceDeserializer[Any, Material]
 @dataclass
 class MaterialDeserializer:
     # @implements ResourceDeserializer
     def __call__(
         self,
-        raw: JsonValue,
+        raw: Any,
         *,
         breadcrumb: Optional[Breadcrumb] = None,
     ) -> Material:
         return self.deserialize(raw, breadcrumb or Breadcrumb())
 
-    def or_location(self, raw: JsonValue, breadcrumb: Breadcrumb) -> MaterialOrLocation:
+    def or_location(self, raw: Any, breadcrumb: Breadcrumb) -> MaterialOrLocation:
         """Deserialize a `Material` or `MaterialLocation` from a raw value."""
         # A string is assumed to be a resource location.
         if isinstance(raw, str):
@@ -48,12 +47,12 @@ class MaterialDeserializer:
         # Anything else is assumed to be a serialized resource.
         return self(raw, breadcrumb=breadcrumb)
 
-    def deserialize(self, raw_material: JsonValue, breadcrumb: Breadcrumb) -> Material:
+    def deserialize(self, raw_material: Any, breadcrumb: Breadcrumb) -> Material:
         """Deserialize a `Material` from a raw value."""
         block = self.deserialize_block(raw_material, breadcrumb)
         return Material(block=block)
 
-    def deserialize_block(self, raw_block: JsonValue, breadcrumb: Breadcrumb) -> Block:
+    def deserialize_block(self, raw_block: Any, breadcrumb: Breadcrumb) -> Block:
         # A string is assumed to be a basic block.
         if isinstance(raw_block, str):
             return Block(name=raw_block)
@@ -89,25 +88,21 @@ class MaterialDeserializer:
             data=data,
         )
 
-    def deserialize_name(self, raw_name: JsonValue, breadcrumb: Breadcrumb) -> str:
+    def deserialize_name(self, raw_name: Any, breadcrumb: Breadcrumb) -> str:
         if not isinstance(raw_name, str):
             raise MalformedMaterial(
                 f"Malformed `name`, at `{breadcrumb}`", raw_name, breadcrumb
             )
         return raw_name
 
-    def deserialize_state(
-        self, raw_state: JsonValue, breadcrumb: Breadcrumb
-    ) -> BlockState:
+    def deserialize_state(self, raw_state: Any, breadcrumb: Breadcrumb) -> BlockState:
         if not isinstance(raw_state, dict):
             raise MalformedMaterial(
                 f"Malformed `state`, at `{breadcrumb}`", raw_state, breadcrumb
             )
         return BlockState(**raw_state)
 
-    def deserialize_data(
-        self, raw_data: JsonValue, breadcrumb: Breadcrumb
-    ) -> NbtCompound:
+    def deserialize_data(self, raw_data: Any, breadcrumb: Breadcrumb) -> NbtCompound:
         if not isinstance(raw_data, dict):
             raise MalformedMaterial(
                 f"Malformed `data`, at `{breadcrumb}`", raw_data, breadcrumb

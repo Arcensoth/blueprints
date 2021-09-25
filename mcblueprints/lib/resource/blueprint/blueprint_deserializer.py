@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional, cast
 
-from pyckaxe import HERE, Block, Breadcrumb, JsonValue, Position, ResourceLocation
+from pyckaxe import HERE, Block, Breadcrumb, Position, ResourceLocation
 
 from mcblueprints.lib.resource.blueprint.blueprint import (
     Blueprint,
@@ -39,29 +39,27 @@ class BlueprintDeserializationException(Exception):
 
 
 class MalformedBlueprint(BlueprintDeserializationException):
-    def __init__(self, message: str, raw_blueprint: JsonValue, breadcrumb: Breadcrumb):
-        self.raw_blueprint: JsonValue = raw_blueprint
+    def __init__(self, message: str, raw_blueprint: Any, breadcrumb: Breadcrumb):
+        self.raw_blueprint: Any = raw_blueprint
         self.breadcrumb: Breadcrumb = breadcrumb
         super().__init__(message)
 
 
 class MalformedPaletteEntry(BlueprintDeserializationException):
-    def __init__(
-        self, message: str, raw_palette_entry: JsonValue, breadcrumb: Breadcrumb
-    ):
-        self.raw_palette_entry: JsonValue = raw_palette_entry
+    def __init__(self, message: str, raw_palette_entry: Any, breadcrumb: Breadcrumb):
+        self.raw_palette_entry: Any = raw_palette_entry
         self.breadcrumb: Breadcrumb = breadcrumb
         super().__init__(message)
 
 
-# @implements ResourceDeserializer[JsonValue, Blueprint]
+# @implements ResourceDeserializer[Any, Blueprint]
 @dataclass
 class BlueprintDeserializer:
     filter_deserializer: FilterDeserializer
     material_deserializer: MaterialDeserializer
 
     palette_entry_deserializers: Dict[
-        str, Callable[[str, Dict[str, JsonValue], Breadcrumb], BlueprintPaletteEntry]
+        str, Callable[[str, Dict[str, Any], Breadcrumb], BlueprintPaletteEntry]
     ] = field(init=False)
 
     def __post_init__(self):
@@ -75,15 +73,13 @@ class BlueprintDeserializer:
     # @implements ResourceDeserializer
     def __call__(
         self,
-        raw: JsonValue,
+        raw: Any,
         *,
         breadcrumb: Optional[Breadcrumb] = None,
     ) -> Blueprint:
         return self.deserialize(raw, breadcrumb or Breadcrumb())
 
-    def or_location(
-        self, raw: JsonValue, breadcrumb: Breadcrumb
-    ) -> BlueprintOrLocation:
+    def or_location(self, raw: Any, breadcrumb: Breadcrumb) -> BlueprintOrLocation:
         """Deserialize a `Blueprint` or `BlueprintLocation` from a raw value."""
         # A string is assumed to be a resource location.
         if isinstance(raw, str):
@@ -91,9 +87,7 @@ class BlueprintDeserializer:
         # Anything else is assumed to be a serialized resource.
         return self(raw, breadcrumb=breadcrumb)
 
-    def deserialize(
-        self, raw_blueprint: JsonValue, breadcrumb: Breadcrumb
-    ) -> Blueprint:
+    def deserialize(self, raw_blueprint: Any, breadcrumb: Breadcrumb) -> Blueprint:
         """Deserialize a `Blueprint` from a raw value."""
         if not isinstance(raw_blueprint, dict):
             raise MalformedBlueprint(
@@ -147,16 +141,14 @@ class BlueprintDeserializer:
 
         return blueprint
 
-    def deserialize_size(self, raw_size: JsonValue, breadcrumb: Breadcrumb) -> Position:
+    def deserialize_size(self, raw_size: Any, breadcrumb: Breadcrumb) -> Position:
         if not isinstance(raw_size, list):
             raise MalformedBlueprint(
                 f"Malformed `size`, at `{breadcrumb}`", raw_size, breadcrumb
             )
         return ~Position.from_list(cast(Any, raw_size))
 
-    def deserialize_anchor(
-        self, raw_anchor: JsonValue, breadcrumb: Breadcrumb
-    ) -> Position:
+    def deserialize_anchor(self, raw_anchor: Any, breadcrumb: Breadcrumb) -> Position:
         if not isinstance(raw_anchor, list):
             raise MalformedBlueprint(
                 f"Malformed `anchor`, at `{breadcrumb}`", raw_anchor, breadcrumb
@@ -164,7 +156,7 @@ class BlueprintDeserializer:
         return ~Position.from_list(cast(Any, raw_anchor))
 
     def deserialize_palette(
-        self, raw_palette: JsonValue, breadcrumb: Breadcrumb
+        self, raw_palette: Any, breadcrumb: Breadcrumb
     ) -> BlueprintPalette:
         if not isinstance(raw_palette, dict):
             raise MalformedBlueprint(
@@ -185,7 +177,7 @@ class BlueprintDeserializer:
         return palette
 
     def deserialize_palette_entry(
-        self, palette_key: str, raw_palette_entry: JsonValue, breadcrumb: Breadcrumb
+        self, palette_key: str, raw_palette_entry: Any, breadcrumb: Breadcrumb
     ) -> BlueprintPaletteEntry:
         # A string is assumed to be a basic block.
         if isinstance(raw_palette_entry, str):
@@ -236,7 +228,7 @@ class BlueprintDeserializer:
     def deserialize_block_palette_entry(
         self,
         palette_key: str,
-        raw_palette_entry: Dict[str, JsonValue],
+        raw_palette_entry: Dict[str, Any],
         breadcrumb: Breadcrumb,
     ) -> BlockBlueprintPaletteEntry:
         block = self.material_deserializer.deserialize_block(
@@ -247,7 +239,7 @@ class BlueprintDeserializer:
     def deserialize_blueprint_palette_entry(
         self,
         palette_key: str,
-        raw_palette_entry: Dict[str, JsonValue],
+        raw_palette_entry: Dict[str, Any],
         breadcrumb: Breadcrumb,
     ) -> BlueprintBlueprintPaletteEntry:
         # blueprint (required, non-nullable)
@@ -284,7 +276,7 @@ class BlueprintDeserializer:
     def deserialize_material_palette_entry(
         self,
         palette_key: str,
-        raw_palette_entry: Dict[str, JsonValue],
+        raw_palette_entry: Dict[str, Any],
         breadcrumb: Breadcrumb,
     ) -> MaterialBlueprintPaletteEntry:
         # material (required, non-nullable)
@@ -302,13 +294,13 @@ class BlueprintDeserializer:
     def deserialize_void_palette_entry(
         self,
         palette_key: str,
-        raw_palette_entry: Dict[str, JsonValue],
+        raw_palette_entry: Dict[str, Any],
         breadcrumb: Breadcrumb,
     ) -> VoidBlueprintPaletteEntry:
         return VoidBlueprintPaletteEntry(key=palette_key)
 
     def deserialize_layout(
-        self, raw_layout: JsonValue, breadcrumb: Breadcrumb
+        self, raw_layout: Any, breadcrumb: Breadcrumb
     ) -> BlueprintLayout:
         if not isinstance(raw_layout, list):
             raise MalformedBlueprint(
