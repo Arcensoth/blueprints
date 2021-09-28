@@ -42,7 +42,7 @@ class MalformedRule(FilterDeserializationException):
         super().__init__(message)
 
 
-# @implements ResourceDeserializer[Any, Filter]
+# @implements ResourceDeserializer[Filter, Any]
 @dataclass
 class FilterDeserializer:
     material_deserializer: MaterialDeserializer

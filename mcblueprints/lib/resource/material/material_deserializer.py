@@ -26,7 +26,7 @@ class MalformedMaterial(MaterialDeserializationException):
         super().__init__(message)
 
 
-# @implements ResourceDeserializer[Any, Material]
+# @implements ResourceDeserializer[Material, Any]
 @dataclass
 class MaterialDeserializer:
     # @implements ResourceDeserializer

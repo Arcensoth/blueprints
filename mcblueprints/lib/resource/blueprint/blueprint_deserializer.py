@@ -52,7 +52,7 @@ class MalformedPaletteEntry(BlueprintDeserializationException):
         super().__init__(message)
 
 
-# @implements ResourceDeserializer[Any, Blueprint]
+# @implements ResourceDeserializer[Blueprint, Any]
 @dataclass
 class BlueprintDeserializer:
     filter_deserializer: FilterDeserializer
