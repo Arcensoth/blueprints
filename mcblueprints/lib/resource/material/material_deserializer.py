@@ -35,6 +35,7 @@ class MaterialDeserializer:
         raw: Any,
         *,
         breadcrumb: Optional[Breadcrumb] = None,
+        **kwargs,
     ) -> Material:
         return self.deserialize(raw, breadcrumb or Breadcrumb())
 

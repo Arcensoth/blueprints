@@ -65,6 +65,7 @@ class FilterDeserializer:
         raw: Any,
         *,
         breadcrumb: Optional[Breadcrumb] = None,
+        **kwargs,
     ) -> Filter:
         return self.deserialize(raw, breadcrumb or Breadcrumb())
 
