@@ -3,7 +3,8 @@ from typing import Any, Callable, Dict, List, Optional
 
 from pyckaxe import Breadcrumb, ResourceLocation
 
-from mcblueprints.lib.resource.filter.filter import Filter, FilterRule
+from mcblueprints.lib.resource.filter.filter import Filter, FilterLink
+from mcblueprints.lib.resource.filter.rule.abc.filter_rule import FilterRule
 from mcblueprints.lib.resource.filter.rule.keep_blocks_filter_rule import (
     KeepBlocksFilterRule,
 )
@@ -16,7 +17,6 @@ from mcblueprints.lib.resource.filter.rule.replace_blocks_filter_rule import (
 from mcblueprints.lib.resource.filter.rule.replace_materials_filter_rule import (
     ReplaceMaterialsFilterRule,
 )
-from mcblueprints.lib.resource.filter.types import FilterOrLocation
 from mcblueprints.lib.resource.material.material_deserializer import (
     MaterialDeserializer,
 )
@@ -68,13 +68,13 @@ class FilterDeserializer:
     ) -> Filter:
         return self.deserialize(raw, breadcrumb or Breadcrumb())
 
-    def or_location(self, raw: Any, breadcrumb: Breadcrumb) -> FilterOrLocation:
+    def link(self, raw: Any, breadcrumb: Breadcrumb) -> FilterLink:
         """Deserialize a `Filter` or `FilterLocation` from a raw value."""
         # A string is assumed to be a resource location.
         if isinstance(raw, str):
-            return Filter @ ResourceLocation.from_string(raw)
+            return FilterLink(Filter @ ResourceLocation.from_string(raw))
         # Anything else is assumed to be a serialized resource.
-        return self(raw, breadcrumb=breadcrumb)
+        return FilterLink(self(raw, breadcrumb=breadcrumb))
 
     def deserialize(self, raw_filter: Any, breadcrumb: Breadcrumb) -> Filter:
         """Deserialize a `Filter` from a raw value."""
@@ -191,9 +191,7 @@ class FilterDeserializer:
                 breadcrumb_materials,
             )
         materials = [
-            self.material_deserializer.or_location(
-                raw_material, breadcrumb_materials[i]
-            )
+            self.material_deserializer.link(raw_material, breadcrumb_materials[i])
             for i, raw_material in enumerate(raw_materials)
         ]
 
@@ -258,9 +256,7 @@ class FilterDeserializer:
                 breadcrumb_materials,
             )
         materials = [
-            self.material_deserializer.or_location(
-                raw_material, breadcrumb_materials[i]
-            )
+            self.material_deserializer.link(raw_material, breadcrumb_materials[i])
             for i, raw_material in enumerate(raw_materials)
         ]
 
@@ -273,7 +269,7 @@ class FilterDeserializer:
                 raw_rule,
                 breadcrumb_replacement,
             )
-        replacement = self.material_deserializer.or_location(
+        replacement = self.material_deserializer.link(
             raw_replacement, breadcrumb_replacement
         )
 

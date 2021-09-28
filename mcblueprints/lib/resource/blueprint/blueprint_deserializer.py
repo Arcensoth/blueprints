@@ -6,6 +6,7 @@ from pyckaxe import HERE, Block, Breadcrumb, Position, ResourceLocation
 from mcblueprints.lib.resource.blueprint.blueprint import (
     Blueprint,
     BlueprintLayout,
+    BlueprintLink,
     BlueprintPalette,
 )
 from mcblueprints.lib.resource.blueprint.palette_entry.abc.blueprint_palette_entry import (
@@ -23,10 +24,9 @@ from mcblueprints.lib.resource.blueprint.palette_entry.material_blueprint_palett
 from mcblueprints.lib.resource.blueprint.palette_entry.void_blueprint_palette_entry import (
     VoidBlueprintPaletteEntry,
 )
-from mcblueprints.lib.resource.blueprint.types import BlueprintOrLocation
+from mcblueprints.lib.resource.filter.filter import FilterLink
 from mcblueprints.lib.resource.filter.filter_deserializer import FilterDeserializer
-from mcblueprints.lib.resource.filter.types import FilterOrLocation
-from mcblueprints.lib.resource.material.material import Material
+from mcblueprints.lib.resource.material.material import Material, MaterialLink
 from mcblueprints.lib.resource.material.material_deserializer import (
     MaterialDeserializer,
 )
@@ -79,13 +79,15 @@ class BlueprintDeserializer:
     ) -> Blueprint:
         return self.deserialize(raw, breadcrumb or Breadcrumb())
 
-    def or_location(self, raw: Any, breadcrumb: Breadcrumb) -> BlueprintOrLocation:
-        """Deserialize a `Blueprint` or `BlueprintLocation` from a raw value."""
+    def link(self, raw: Any, breadcrumb: Breadcrumb) -> BlueprintLink:
+        """Deserialize a `BlueprintLink` from a raw value."""
         # A string is assumed to be a resource location.
         if isinstance(raw, str):
-            return Blueprint @ ResourceLocation.from_string(raw)
+            location = Blueprint @ ResourceLocation.from_string(raw)
+            return BlueprintLink(location)
         # Anything else is assumed to be a serialized resource.
-        return self(raw, breadcrumb=breadcrumb)
+        blueprint = self(raw, breadcrumb=breadcrumb)
+        return BlueprintLink(blueprint)
 
     def deserialize(self, raw_blueprint: Any, breadcrumb: Breadcrumb) -> Blueprint:
         """Deserialize a `Blueprint` from a raw value."""
@@ -181,8 +183,10 @@ class BlueprintDeserializer:
     ) -> BlueprintPaletteEntry:
         # A string is assumed to be a basic block.
         if isinstance(raw_palette_entry, str):
-            material = Material(block=Block(name=raw_palette_entry))
-            return MaterialBlueprintPaletteEntry(key=palette_key, material=material)
+            return MaterialBlueprintPaletteEntry(
+                key=palette_key,
+                material=MaterialLink(Material(block=Block(name=raw_palette_entry))),
+            )
 
         # Otherwise we ought to have a concrete definition...
 
@@ -251,7 +255,7 @@ class BlueprintDeserializer:
                 raw_palette_entry,
                 breadcrumb_blueprint,
             )
-        blueprint = self.or_location(raw_blueprint, breadcrumb_blueprint)
+        blueprint = self.link(raw_blueprint, breadcrumb_blueprint)
 
         # offset (optional, non-nullable, has a default)
         offset: Position = HERE
@@ -265,9 +269,9 @@ class BlueprintDeserializer:
             offset = ~Position.from_list(cast(Any, raw_offset))
 
         # filter (optional, nullable, defaults to null)
-        filter: Optional[FilterOrLocation] = None
+        filter: Optional[FilterLink] = None
         if raw_filter := raw_palette_entry.get("filter"):
-            filter = self.filter_deserializer.or_location(raw_filter, breadcrumb.filter)
+            filter = self.filter_deserializer.link(raw_filter, breadcrumb.filter)
 
         return BlueprintBlueprintPaletteEntry(
             key=palette_key, blueprint=blueprint, offset=offset, filter=filter
@@ -287,7 +291,7 @@ class BlueprintDeserializer:
                 raw_palette_entry,
                 breadcrumb.material,
             )
-        material = self.material_deserializer.or_location(raw_material, breadcrumb)
+        material = self.material_deserializer.link(raw_material, breadcrumb)
 
         return MaterialBlueprintPaletteEntry(key=palette_key, material=material)
 

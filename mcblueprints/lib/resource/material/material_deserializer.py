@@ -10,8 +10,7 @@ from pyckaxe import (
     to_nbt_compound,
 )
 
-from mcblueprints.lib.resource.material.material import Material
-from mcblueprints.lib.resource.material.types import MaterialOrLocation
+from mcblueprints.lib.resource.material.material import Material, MaterialLink
 
 __all__ = ("MaterialDeserializer",)
 
@@ -39,13 +38,13 @@ class MaterialDeserializer:
     ) -> Material:
         return self.deserialize(raw, breadcrumb or Breadcrumb())
 
-    def or_location(self, raw: Any, breadcrumb: Breadcrumb) -> MaterialOrLocation:
+    def link(self, raw: Any, breadcrumb: Breadcrumb) -> MaterialLink:
         """Deserialize a `Material` or `MaterialLocation` from a raw value."""
         # A string is assumed to be a resource location.
         if isinstance(raw, str):
-            return Material @ ResourceLocation.from_string(raw)
+            return MaterialLink(Material @ ResourceLocation.from_string(raw))
         # Anything else is assumed to be a serialized resource.
-        return self(raw, breadcrumb=breadcrumb)
+        return MaterialLink(self(raw, breadcrumb=breadcrumb))
 
     def deserialize(self, raw_material: Any, breadcrumb: Breadcrumb) -> Material:
         """Deserialize a `Material` from a raw value."""

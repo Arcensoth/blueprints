@@ -1,11 +1,14 @@
 from dataclasses import dataclass
 from typing import List
 
-from pyckaxe import BlockMap, ResolutionContext, Resource
+from pyckaxe import BlockMap, ResolutionContext, Resource, ResourceLink
 
 from mcblueprints.lib.resource.filter.rule.abc.filter_rule import FilterRule
 
-__all__ = ("Filter",)
+__all__ = (
+    "Filter",
+    "FilterLink",
+)
 
 
 @dataclass
@@ -16,3 +19,7 @@ class Filter(Resource):
         # Apply all rules, in order.
         for rule in self.rules:
             await rule.apply(ctx, block_map)
+
+
+class FilterLink(ResourceLink[Filter]):
+    pass

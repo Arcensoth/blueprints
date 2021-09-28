@@ -1,9 +1,12 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from pyckaxe import Block, BlockState, NbtCompound, Resource
+from pyckaxe import Block, BlockState, NbtCompound, Resource, ResourceLink
 
-__all__ = ("Material",)
+__all__ = (
+    "Material",
+    "MaterialLink",
+)
 
 
 @dataclass
@@ -27,3 +30,7 @@ class Material(Resource):
     @property
     def data(self) -> Optional[NbtCompound]:
         return self.block.data
+
+
+class MaterialLink(ResourceLink[Material]):
+    pass

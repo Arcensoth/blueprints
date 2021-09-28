@@ -1,21 +1,23 @@
 from dataclasses import dataclass
-from typing import Dict, Iterable, List
+from typing import Iterable
 
-from pyckaxe import BlockMap, Position, ResolutionContext, Resource, Structure
-
-from mcblueprints.lib.resource.blueprint.palette_entry.abc.blueprint_palette_entry import (
-    BlueprintPaletteEntry,
+from pyckaxe import (
+    BlockMap,
+    Position,
+    ResolutionContext,
+    Resource,
+    ResourceLink,
+    ResourceProcessingContext,
+    Structure,
 )
+
+from mcblueprints.lib.resource.blueprint.types import BlueprintLayout, BlueprintPalette
 
 __all__ = (
-    "BlueprintPalette",
-    "BlueprintLayout",
     "Blueprint",
+    "BlueprintLink",
+    "BlueprintProcessingContext",
 )
-
-
-BlueprintPalette = Dict[str, BlueprintPaletteEntry]
-BlueprintLayout = List[List[str]]
 
 
 @dataclass
@@ -49,3 +51,11 @@ class Blueprint(Resource):
         block_map = await self.flatten(ctx)
         structure = Structure.from_block_map(block_map)
         return structure
+
+
+class BlueprintLink(ResourceLink[Blueprint]):
+    pass
+
+
+class BlueprintProcessingContext(ResourceProcessingContext[Blueprint]):
+    pass

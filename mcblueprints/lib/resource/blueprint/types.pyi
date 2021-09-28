@@ -1,9 +1,8 @@
-from typing import Union
+from typing import Dict, List
 
-from pyckaxe import ClassifiedResourceLocation, ResourceProcessingContext
+from mcblueprints.lib.resource.blueprint.palette_entry.abc.blueprint_palette_entry import (
+    BlueprintPaletteEntry,
+)
 
-from mcblueprints.lib.resource.blueprint.blueprint import Blueprint
-
-BlueprintLocation = ClassifiedResourceLocation[Blueprint]
-BlueprintOrLocation = Union[Blueprint, BlueprintLocation]
-BlueprintProcessingContext = ResourceProcessingContext[Blueprint]
+BlueprintPalette = Dict[str, BlueprintPaletteEntry]
+BlueprintLayout = List[List[str]]
