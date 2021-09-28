@@ -1,10 +1,7 @@
 from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, List, Optional, Type, TypeVar, cast
+from typing import Any, Callable, Dict, List, Optional, cast
 
 from pyckaxe import HERE, Block, Breadcrumb, Position, ResourceLocation
-from pyckaxe.lib.pack.abc.resource import Resource
-from pyckaxe.lib.pack.abc.resource_deserializer import ResourceDeserializer
-from pyckaxe.lib.pack.resource_link import ResourceLink
 
 from mcblueprints.lib.resource.blueprint.blueprint import (
     Blueprint,
@@ -55,27 +52,6 @@ class MalformedPaletteEntry(BlueprintDeserializationException):
         super().__init__(message)
 
 
-RT = TypeVar("RT", bound=Resource)
-RLT = TypeVar("RLT", bound=ResourceLink)
-
-
-def deserialize_resource_link(
-    resource_type: Type[RT],
-    resource_link_type: Type[RLT],
-    resource_deserializer: ResourceDeserializer[RT, Any],
-    raw: Any,
-    **kwargs,
-) -> RLT:
-    """Deserialize a `ResourceLink` from a raw value."""
-    # A string is assumed to be a resource location.
-    if isinstance(raw, str):
-        location = resource_type @ ResourceLocation.from_string(raw)
-        return resource_link_type(location)
-    # Anything else is assumed to be a serialized resource.
-    resource = resource_deserializer(raw, **kwargs)
-    return resource_link_type(resource)
-
-
 # @implements ResourceDeserializer[Blueprint, Any]
 @dataclass
 class BlueprintDeserializer:
@@ -96,13 +72,23 @@ class BlueprintDeserializer:
 
     # @implements ResourceDeserializer
     def __call__(
-        self, raw: Any, *, breadcrumb: Optional[Breadcrumb] = None, **kwargs
+        self,
+        raw: Any,
+        *,
+        breadcrumb: Optional[Breadcrumb] = None,
+        **kwargs,
     ) -> Blueprint:
         return self.deserialize(raw, breadcrumb or Breadcrumb())
 
     def link(self, raw: Any, breadcrumb: Breadcrumb) -> BlueprintLink:
         """Deserialize a `BlueprintLink` from a raw value."""
-        return deserialize_resource_link(Blueprint, BlueprintLink, self, raw)
+        # A string is assumed to be a resource location.
+        if isinstance(raw, str):
+            location = Blueprint @ ResourceLocation.from_string(raw)
+            return BlueprintLink(location)
+        # Anything else is assumed to be a serialized resource.
+        blueprint = self(raw, breadcrumb=breadcrumb)
+        return BlueprintLink(blueprint)
 
     def deserialize(self, raw_blueprint: Any, breadcrumb: Breadcrumb) -> Blueprint:
         """Deserialize a `Blueprint` from a raw value."""
