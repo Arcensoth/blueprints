@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Iterable
+from typing import Iterable, TypeAlias
 
 from pyckaxe import (
     BlockMap,
@@ -53,9 +53,5 @@ class Blueprint(Resource):
         return structure
 
 
-class BlueprintLink(ResourceLink[Blueprint]):
-    pass
-
-
-class BlueprintProcessingContext(ResourceProcessingContext[Blueprint]):
-    pass
+BlueprintLink: TypeAlias = ResourceLink[Blueprint]
+BlueprintProcessingContext: TypeAlias = ResourceProcessingContext[Blueprint]

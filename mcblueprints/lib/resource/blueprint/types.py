@@ -1,4 +1,4 @@
-from typing import Any
+from typing import TypeAlias
 
-BlueprintPalette = Any
-BlueprintLayout = Any
+BlueprintPalette = TypeAlias
+BlueprintLayout = TypeAlias

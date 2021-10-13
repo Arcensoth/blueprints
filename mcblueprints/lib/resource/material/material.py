@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, TypeAlias
 
 from pyckaxe import Block, BlockState, NbtCompound, Resource, ResourceLink
 
@@ -32,5 +32,4 @@ class Material(Resource):
         return self.block.data
 
 
-class MaterialLink(ResourceLink[Material]):
-    pass
+MaterialLink: TypeAlias = ResourceLink[Material]

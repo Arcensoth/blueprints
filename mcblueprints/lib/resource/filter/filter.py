@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, TypeAlias
 
 from pyckaxe import BlockMap, ResolutionContext, Resource, ResourceLink
 
@@ -21,5 +21,4 @@ class Filter(Resource):
             await rule.apply(ctx, block_map)
 
 
-class FilterLink(ResourceLink[Filter]):
-    pass
+FilterLink: TypeAlias = ResourceLink[Filter]
