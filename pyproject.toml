@@ -11,7 +11,6 @@ keywords = ["minecraft", "structures", "blueprints", "datapacks"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-pydantic = "^1.8.2"
 click = "^7.1.2"
 pyckaxe = {path = "../pyckaxe", develop = true}
 
