@@ -4,10 +4,10 @@ from pathlib import Path
 from typing import Any, cast
 
 from pyckaxe import (
-    CommonResourceLocationResolver,
     CommonResourceResolver,
     JsonResourceLoader,
     LRUResourceCache,
+    MatchingResourceLocationResolver,
     NbtResourceDumper,
     ResourceCache,
     ResourceCacheSet,
@@ -17,6 +17,7 @@ from pyckaxe import (
     ResourceResolverSet,
     ResourceTransformerSet,
     StaticResourceCache,
+    StaticResourceLocationResolver,
     Structure,
     StructureSerializer,
     UnboundedResourceCache,
@@ -65,36 +66,31 @@ class BlueprintsBuildContext:
 
         # Create serializers.
         material_deserializer = MaterialDeserializer()
-        filter_deserializer = FilterDeserializer(
-            material_deserializer=material_deserializer,
-        )
-        blueprint_deserializer = BlueprintDeserializer(
-            filter_deserializer=filter_deserializer,
-            material_deserializer=material_deserializer,
-        )
+        filter_deserializer = FilterDeserializer()
+        blueprint_deserializer = lambda data, **kwargs: Blueprint.parse_obj(data)
 
         # Create and register input resolvers.
         resolvers = ResourceResolverSet()
         resolvers[Blueprint] = CommonResourceResolver[Blueprint](
-            location_resolver=CommonResourceLocationResolver(
-                path=Path(self.options.input_path / "data"),
-                parts=self.options.blueprints_registry_parts,
+            location_resolver=MatchingResourceLocationResolver(
+                root=Path(self.options.input_path / "data"),
+                registry_parts=self.options.blueprints_registry_parts,
             ),
             loader=JsonResourceLoader(blueprint_deserializer),
             cache=caches[Blueprint],
         )
         resolvers[Filter] = CommonResourceResolver[Filter](
-            location_resolver=CommonResourceLocationResolver(
-                path=Path(self.options.input_path / "data"),
-                parts=self.options.filters_registry_parts,
+            location_resolver=MatchingResourceLocationResolver(
+                root=Path(self.options.input_path / "data"),
+                registry_parts=self.options.filters_registry_parts,
             ),
             loader=JsonResourceLoader(filter_deserializer),
             cache=caches[Filter],
         )
         resolvers[Material] = CommonResourceResolver[Material](
-            location_resolver=CommonResourceLocationResolver(
-                path=Path(self.options.input_path / "data"),
-                parts=self.options.materials_registry_parts,
+            location_resolver=MatchingResourceLocationResolver(
+                root=Path(self.options.input_path / "data"),
+                registry_parts=self.options.materials_registry_parts,
             ),
             loader=JsonResourceLoader(material_deserializer),
             cache=caches[Material],
@@ -109,9 +105,10 @@ class BlueprintsBuildContext:
 
         # Create and register output location resolvers.
         output_location_resolvers = ResourceLocationResolverSet()
-        output_location_resolvers[Structure] = CommonResourceLocationResolver(
-            path=Path(self.options.output_path / "data"),
-            parts=self.options.generated_structures_registry_parts,
+        output_location_resolvers[Structure] = StaticResourceLocationResolver(
+            root=Path(self.options.output_path / "data"),
+            registry_parts=self.options.generated_structures_registry_parts,
+            suffix=".nbt",
         )
 
         # Create and register output dumpers.

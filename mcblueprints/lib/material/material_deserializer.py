@@ -1,16 +1,10 @@
-from dataclasses import dataclass
+# FIXME
+
 from typing import Any, Optional
 
-from pyckaxe import (
-    Block,
-    BlockState,
-    Breadcrumb,
-    NbtCompound,
-    ResourceLocation,
-    to_nbt_compound,
-)
+from pyckaxe import Block, BlockState, Breadcrumb, NbtCompound, to_nbt_compound
 
-from mcblueprints.lib.resource.material.material import Material, MaterialLink
+from mcblueprints.lib.material.material import Material
 
 __all__ = ("MaterialDeserializer",)
 
@@ -27,25 +21,10 @@ class MalformedMaterial(MaterialDeserializationException):
 
 
 # @implements ResourceDeserializer[Material, Any]
-@dataclass
 class MaterialDeserializer:
     # @implements ResourceDeserializer
-    def __call__(
-        self,
-        raw: Any,
-        *,
-        breadcrumb: Optional[Breadcrumb] = None,
-        **kwargs,
-    ) -> Material:
-        return self.deserialize(raw, breadcrumb or Breadcrumb())
-
-    def link(self, raw: Any, breadcrumb: Breadcrumb) -> MaterialLink:
-        """Deserialize a `Material` or `MaterialLocation` from a raw value."""
-        # A string is assumed to be a resource location.
-        if isinstance(raw, str):
-            return MaterialLink(Material @ ResourceLocation.from_string(raw))
-        # Anything else is assumed to be a serialized resource.
-        return MaterialLink(self(raw, breadcrumb=breadcrumb))
+    def __call__(self, raw: Any, **kwargs) -> Material:
+        return Material.parse_obj(raw)
 
     def deserialize(self, raw_material: Any, breadcrumb: Breadcrumb) -> Material:
         """Deserialize a `Material` from a raw value."""

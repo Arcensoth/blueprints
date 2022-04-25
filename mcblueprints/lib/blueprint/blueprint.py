@@ -1,31 +1,57 @@
-from dataclasses import dataclass
-from typing import Iterable, TypeAlias
+from abc import ABC, abstractmethod
+from typing import Any, Iterable, Optional, TypeAlias
 
-from pyckaxe import (
-    BlockMap,
-    Position,
-    ResolutionContext,
-    Resource,
-    ResourceLink,
-    ResourceProcessingContext,
-    Structure,
-)
-
-from mcblueprints.lib.resource.blueprint.types import BlueprintLayout, BlueprintPalette
+from pyckaxe import BlockMap, Position, ResolutionContext, Resource, Structure
+from pyckaxe.utils import ModuleClassifier
+from pyckaxe.utils.validators.normalizer import Normalizer
+from pydantic import BaseModel
 
 __all__ = (
+    "BlueprintPaletteEntry",
+    "BlueprintPalette",
+    "BlueprintLayout",
     "Blueprint",
-    "BlueprintLink",
-    "BlueprintProcessingContext",
 )
 
 
-@dataclass
+class BlueprintPaletteEntry(BaseModel, ABC):
+    key: str
+
+    @classmethod
+    def __get_validators__(cls):
+        yield Normalizer(cls.normalize)
+        yield ModuleClassifier(
+            cls,
+            type_field="type",
+            default_module="mcblueprints.lib.blueprint.palette_entries",
+            function_name="create",
+        )
+
+    @classmethod
+    def normalize(cls, value: Any) -> Any:
+        # A string is assumed to be a basic block.
+        if isinstance(value, str):
+            return dict(type="block", block=value)
+
+    @abstractmethod
+    async def merge(
+        self, ctx: ResolutionContext, block_map: BlockMap, position: Position
+    ):
+        """Merge into `block_map` at `position`."""
+
+
+BlueprintPalette: TypeAlias = dict[str, BlueprintPaletteEntry]
+BlueprintLayout: TypeAlias = list[list[str]]
+
+
 class Blueprint(Resource):
     size: Position
-    anchor: Position
     palette: BlueprintPalette
     layout: BlueprintLayout
+    anchor: Optional[Position] = None
+
+    # TODO ensure palette keys are 1 char
+    # TODO read the layout upside-down
 
     def scan(self, symbol: str) -> Iterable[Position]:
         """Scan over the blueprint, looking for a particular symbol."""
@@ -51,7 +77,3 @@ class Blueprint(Resource):
         block_map = await self.flatten(ctx)
         structure = Structure.from_block_map(block_map)
         return structure
-
-
-BlueprintLink: TypeAlias = ResourceLink[Blueprint]
-BlueprintProcessingContext: TypeAlias = ResourceProcessingContext[Blueprint]

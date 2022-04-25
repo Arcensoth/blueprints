@@ -1,25 +1,11 @@
-from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, List, Optional
+# FIXME
+
+
+from typing import Any
 
 from pyckaxe import Breadcrumb, ResourceLocation
 
-from mcblueprints.lib.resource.filter.filter import Filter, FilterLink
-from mcblueprints.lib.resource.filter.rule.abc.filter_rule import FilterRule
-from mcblueprints.lib.resource.filter.rule.keep_blocks_filter_rule import (
-    KeepBlocksFilterRule,
-)
-from mcblueprints.lib.resource.filter.rule.keep_materials_filter_rule import (
-    KeepMaterialsFilterRule,
-)
-from mcblueprints.lib.resource.filter.rule.replace_blocks_filter_rule import (
-    ReplaceBlocksFilterRule,
-)
-from mcblueprints.lib.resource.filter.rule.replace_materials_filter_rule import (
-    ReplaceMaterialsFilterRule,
-)
-from mcblueprints.lib.resource.material.material_deserializer import (
-    MaterialDeserializer,
-)
+from mcblueprints.lib.filter.filter import Filter, FilterRule
 
 __all__ = ("FilterDeserializer",)
 
@@ -43,31 +29,10 @@ class MalformedRule(FilterDeserializationException):
 
 
 # @implements ResourceDeserializer[Filter, Any]
-@dataclass
 class FilterDeserializer:
-    material_deserializer: MaterialDeserializer
-
-    rule_deserializers: Dict[
-        str, Callable[[Dict[str, Any], Breadcrumb], FilterRule]
-    ] = field(init=False)
-
-    def __post_init__(self):
-        self.rule_deserializers = {
-            "keep_blocks": self.deserialize_keep_blocks_rule,
-            "keep_materials": self.deserialize_keep_materials_rule,
-            "replace_blocks": self.deserialize_replace_blocks_rule,
-            "replace_materials": self.deserialize_replace_materials_rule,
-        }
-
     # @implements ResourceDeserializer
-    def __call__(
-        self,
-        raw: Any,
-        *,
-        breadcrumb: Optional[Breadcrumb] = None,
-        **kwargs,
-    ) -> Filter:
-        return self.deserialize(raw, breadcrumb or Breadcrumb())
+    def __call__(self, raw: Any, **kwargs) -> Filter:
+        return Filter.parse_obj(raw)
 
     def link(self, raw: Any, breadcrumb: Breadcrumb) -> FilterLink:
         """Deserialize a `Filter` or `FilterLocation` from a raw value."""

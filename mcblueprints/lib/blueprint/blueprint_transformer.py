@@ -1,18 +1,15 @@
 from dataclasses import dataclass
 from typing import AsyncIterable, Optional, Tuple, TypeVar
 
-from pyckaxe import Namespace, Resource, ResourceLocation, Structure, StructureLocation
+from pyckaxe import Resource, ResourceLocation, ResourceProcessingContext
 
-from mcblueprints.lib.resource.blueprint.blueprint import BlueprintProcessingContext
-from mcblueprints.lib.resource.blueprint.palette_entry.abc.blueprint_palette_entry import (
-    BlueprintPaletteEntry,
-)
+from mcblueprints.lib.blueprint.blueprint import Blueprint, BlueprintPaletteEntry
 
 __all__ = ("BlueprintTransformer",)
 
 
-ResourceType = TypeVar("ResourceType", bound=Resource)
-PaletteEntryType = TypeVar("PaletteEntryType", bound=BlueprintPaletteEntry)
+ResourceT = TypeVar("ResourceT", bound=Resource)
+PaletteEntryT = TypeVar("PaletteEntryT", bound=BlueprintPaletteEntry)
 
 
 # @implements ResourceTransformer[Blueprint]
@@ -34,23 +31,23 @@ class BlueprintTransformer:
 
     # @implements ResourceTransformer
     def __call__(
-        self, ctx: BlueprintProcessingContext
+        self, ctx: ResourceProcessingContext[Blueprint]
     ) -> AsyncIterable[Tuple[Resource, ResourceLocation]]:
         return self.transform(ctx)
 
     async def transform(
-        self, ctx: BlueprintProcessingContext
+        self, ctx: ResourceProcessingContext[Blueprint]
     ) -> AsyncIterable[Tuple[Resource, ResourceLocation]]:
         """Turn the blueprint into a structure NBT file."""
         structure = await ctx.resource.to_structure(ctx)
         structure_location = self.to_structure_location(ctx.location)
         yield structure, structure_location
 
-    def to_structure_location(self, location: ResourceLocation) -> StructureLocation:
+    def to_structure_location(self, location: ResourceLocation) -> ResourceLocation:
         # Map the blueprint location to a structure location.
-        namespace = Namespace(name=self.generated_namespace or location.namespace.name)
+        namespace = self.generated_namespace or location.namespace
         parts = location.parts
         if self.generated_prefix_parts:
             parts = (*self.generated_prefix_parts, *parts)
-        structure_location = ResourceLocation(namespace, parts)
-        return Structure @ structure_location
+        structure_location = ResourceLocation(namespace=namespace, parts=parts)
+        return structure_location

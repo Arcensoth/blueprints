@@ -1,23 +1,16 @@
-from dataclasses import dataclass
-from typing import Optional
+from typing import Any, Optional
 
-from pyckaxe import BlockMap, Position, ResolutionContext
+from pyckaxe import BlockMap, Position, ResolutionContext, ResourceLink
 
-from mcblueprints.lib.resource.blueprint.blueprint import BlueprintLink
-from mcblueprints.lib.resource.blueprint.palette_entry.abc.blueprint_palette_entry import (
-    BlueprintPaletteEntry,
-)
-from mcblueprints.lib.resource.filter.filter import FilterLink
-
-__all__ = ("BlueprintBlueprintPaletteEntry",)
+from mcblueprints import Blueprint, BlueprintPaletteEntry, Filter
 
 
-@dataclass
 class BlueprintBlueprintPaletteEntry(BlueprintPaletteEntry):
-    blueprint: BlueprintLink
-    offset: Position
-    filter: Optional[FilterLink] = None
+    blueprint: ResourceLink[Blueprint]
+    offset: Optional[Position] = None
+    filter: Optional[ResourceLink[Filter]] = None
 
+    # @implements BlueprintPaletteEntry
     async def merge(
         self, ctx: ResolutionContext, block_map: BlockMap, position: Position
     ):
@@ -32,6 +25,16 @@ class BlueprintBlueprintPaletteEntry(BlueprintPaletteEntry):
             filter = await self.filter(ctx)
             await filter.apply(ctx, child_block_map)
 
+        # Account for the child's anchor and our own offset.
+        child_offset = position
+        if child_blueprint.anchor is not None:
+            child_offset -= child_blueprint.anchor
+        if self.offset is not None:
+            child_offset -= self.offset
+
         # Merge the converted child block map into the parent block map.
-        child_offset = position - self.offset - child_blueprint.anchor
         block_map.merge(child_block_map, child_offset)
+
+
+def create(data: Any) -> BlueprintPaletteEntry:
+    return BlueprintBlueprintPaletteEntry.parse_obj(data)

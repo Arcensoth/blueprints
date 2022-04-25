@@ -1,18 +1,18 @@
-from dataclasses import dataclass
+from typing import Any
 
 from pyckaxe import BlockMap, Position, ResolutionContext
 
-from mcblueprints.lib.resource.blueprint.palette_entry.abc.blueprint_palette_entry import (
-    BlueprintPaletteEntry,
-)
-
-__all__ = ("VoidBlueprintPaletteEntry",)
+from mcblueprints import BlueprintPaletteEntry
 
 
-@dataclass
 class VoidBlueprintPaletteEntry(BlueprintPaletteEntry):
+    # @implements BlueprintPaletteEntry
     async def merge(
         self, ctx: ResolutionContext, block_map: BlockMap, position: Position
     ):
         # Void the block in the block map.
         del block_map[position]
+
+
+def create(data: Any) -> BlueprintPaletteEntry:
+    return VoidBlueprintPaletteEntry.parse_obj(data)

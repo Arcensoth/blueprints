@@ -1,15 +1,10 @@
-from dataclasses import dataclass
-from typing import Optional, TypeAlias
+from typing import Optional
 
-from pyckaxe import Block, BlockState, NbtCompound, Resource, ResourceLink
+from pyckaxe import Block, BlockState, NbtCompound, Resource
 
-__all__ = (
-    "Material",
-    "MaterialLink",
-)
+__all__ = ("Material",)
 
 
-@dataclass
 class Material(Resource):
     block: Block
 
@@ -30,6 +25,3 @@ class Material(Resource):
     @property
     def data(self) -> Optional[NbtCompound]:
         return self.block.data
-
-
-MaterialLink: TypeAlias = ResourceLink[Material]
