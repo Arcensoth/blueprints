@@ -1,5 +1,5 @@
-- type: keep_materials
-  materials:
+- type: keep
+  keep:
     - dank_dungeon:bricks/base
     - dank_dungeon:stone/base
     - dank_dungeon:ground/base
@@ -8,37 +8,37 @@
     - dank_dungeon:arch_slant_z_p/base
     - dank_dungeon:arch_slant_z_q/base
 
-- type: replace_materials
-  materials:
+- type: replace
+  replace:
     - dank_dungeon:bricks/base
   replacement: dank_dungeon:bricks/ruined
 
-- type: replace_materials
-  materials:
+- type: replace
+  replace:
     - dank_dungeon:stone/base
   replacement: dank_dungeon:stone/ruined
 
-- type: replace_materials
-  materials:
+- type: replace
+  replace:
     - dank_dungeon:ground/base
   replacement: dank_dungeon:ground/ruined
 
-- type: replace_materials
-  materials:
+- type: replace
+  replace:
     - dank_dungeon:arch_slant_x_p/base
   replacement: dank_dungeon:arch_slant_x_p/ruined
 
-- type: replace_materials
-  materials:
+- type: replace
+  replace:
     - dank_dungeon:arch_slant_x_q/base
   replacement: dank_dungeon:arch_slant_x_q/ruined
 
-- type: replace_materials
-  materials:
+- type: replace
+  replace:
     - dank_dungeon:arch_slant_z_p/base
   replacement: dank_dungeon:arch_slant_z_p/ruined
 
-- type: replace_materials
-  materials:
+- type: replace
+  replace:
     - dank_dungeon:arch_slant_z_q/base
   replacement: dank_dungeon:arch_slant_z_q/ruined
