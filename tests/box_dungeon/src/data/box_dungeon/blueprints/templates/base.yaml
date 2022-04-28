@@ -1,0 +1,17 @@
+size: [9, 6, 9]
+
+palette:
+  F:
+    type: template
+    template: box_dungeon:floor
+  W:
+    type: template
+    template: box_dungeon:wall_layer
+
+layout:
+  - - W
+  - - W
+  - - W
+  - - W
+  - - W
+  - - F

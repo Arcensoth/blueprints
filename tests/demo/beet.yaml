@@ -1,8 +1,0 @@
-output: .beet_output/tests/demo
-
-data_pack:
-  load: src
-
-require:
-  - mcblueprints.plugins.blueprints
-  - beet.contrib.auto_yaml

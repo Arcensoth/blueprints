@@ -1,0 +1,79 @@
+# size: [9, 9, 9]
+
+palette:
+  a: minecraft:stone
+  b: minecraft:dirt
+  c:
+    type: block
+    block: minecraft:sand
+  d:
+    type: block
+    block:
+      name: minecraft:gravel
+  e:
+    type: block
+    block:
+      name: minecraft:observer
+      state:
+        facing: down
+  f:
+    type: block
+    block:
+      name: minecraft:spawner
+      data:
+        SpawnData:
+          id: minecraft:spider
+  g:
+    type: block_provider
+    provider: minecraft:coal_block
+  h:
+    type: block_provider
+    provider:
+      type: block
+      block: minecraft:obsidian
+  i:
+    type: block_provider
+    provider:
+      type: block
+      block:
+        name: minecraft:crying_obsidian
+
+  q: "@scratch:bricks[wall]"
+  r: "@scratch:bricks[floor]"
+  s: "@scratch:bricks[wall.cracked]"
+  t:
+    type: block_provider
+    provider: "@scratch:bricks[concrete.red]"
+  u:
+    type: block_provider
+    provider:
+      type: themed
+      element: scratch:bricks[concrete.blue]
+  v:
+    type: block_provider
+    provider:
+      type: themed
+      element:
+        theme: scratch:bricks
+        element: concrete.green
+
+  w: "$myblock"
+  x:
+    type: block_provider
+    provider: "$myblock"
+  y:
+    type: block_provider
+    provider:
+      type: variable
+      variable: myblock
+  z:
+    type: block_provider
+    provider:
+      type: variable
+      variable:
+        name: myblock
+
+layout:
+  - - abcdefghi
+    - qrstuv
+    - wxyz

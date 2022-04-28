@@ -1,0 +1,19 @@
+elements:
+  wall: minecraft:stone_bricks
+  floor: minecraft:polished_andesite
+  wall.cracked: minecraft:cracked_stone_bricks
+
+  spawner.zombie:
+    name: minecraft:spawner
+    data:
+      SpawnData:
+        id: minecraft:zombie
+
+  observer:
+    name: minecraft:observer
+    state:
+      facing: up
+
+  concrete.red: minecraft:red_concrete
+  concrete.blue: minecraft:blue_concrete
+  concrete.green: minecraft:green_concrete

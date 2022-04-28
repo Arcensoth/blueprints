@@ -12,7 +12,8 @@ keywords = ["minecraft", "structures", "blueprints", "datapacks"]
 [tool.poetry.dependencies]
 python = "^3.10"
 pydantic = "^1.9.0"
-beet = ">=0.59.0"
+nbtlib = "^1.12.1"
+beet = ">=0.62.0"
 
 [tool.poetry.dev-dependencies]
 black = "^22.1.0"

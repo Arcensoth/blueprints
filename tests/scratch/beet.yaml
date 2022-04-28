@@ -1,0 +1,8 @@
+output: .beet_output/tests/scratch
+
+data_pack:
+  load: src
+
+require:
+  - mcblueprints
+  - beet.contrib.auto_yaml

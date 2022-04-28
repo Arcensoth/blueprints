@@ -1,0 +1,66 @@
+# Restrict the size of the structure. An error will be raised if anything extends
+# outside of these bounds. This goes by (x, y, z) or (length x height x width).
+size: [5, 5, 5]
+
+# The palette maps characters to different types of palette entries that describe how to
+# populate the structure. These can be blocks as well as other layouts.
+palette:
+  # Strings are assumed to be basic blocks.
+  _: minecraft:air
+  g: minecraft:glass
+  c: minecraft:glowstone
+  b: minecraft:bricks
+  # To define block states, use the block type entry.
+  P:
+    type: block
+    name: minecraft:quartz_pillar
+    state:
+      axis: y
+  X:
+    type: block
+    name: minecraft:tnt
+    state:
+      unstable: true
+  # To define NBT data, use the block type entry.
+  T:
+    type: block
+    name: minecraft:trapped_chest
+    data:
+      Items:
+        - id: minecraft:diamond
+          Count: 1b
+          Slot: 13b
+
+# The layout is a 2-D list of strings (a 3-D list of characters) that says how to build
+# the structure, piece by piece, using the palette. Note that the first section of the
+# layout corresponds to the top-most layer of blocks in the structure.
+layout:
+  - - ggggg
+    - ggggg
+    - ggggg
+    - ggggg
+    - ggggg
+
+  - - ggggg
+    - g___g
+    - g___g
+    - g___g
+    - ggggg
+
+  - - ggggg
+    - g___g
+    - g_T_g
+    - g___g
+    - ggggg
+
+  - - cgggc
+    - g___g
+    - g_P_g
+    - g___g
+    - cgggc
+
+  - - bbbbb
+    - bbbbb
+    - bbXbb
+    - bbbbb
+    - bbbbb

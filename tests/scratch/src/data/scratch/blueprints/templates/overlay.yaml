@@ -1,0 +1,41 @@
+# size: [9, 9, 9]
+
+palette:
+  B:
+    type: template
+    template: scratch:base
+    variables:
+      # myblock: "$red_spawner"
+      # myblock:
+      #   type: variable
+      #   variable: blue_spawner
+      # myblock:
+      #   type: variable
+      #   variable:
+      #     name: green_spawner
+
+      # myblock: "@scratch:bricks[spawner.zombie]"
+      # myblock: "@scratch:bricks[observer]"
+      # myblock:
+      #   type: themed
+      #   element: scratch:bricks[concrete.red]
+      # myblock:
+      #   type: themed
+      #   element:
+      #     theme: scratch:bricks
+      #     element: concrete.blue
+
+      myblock: minecraft:beacon
+      # myblock:
+      #   type: block
+      #   block: minecraft:glowstone
+      # myblock:
+      #   type: block
+      #   block:
+      #     name: minecraft:spawner
+      #     data:
+      #       SpawnData:
+      #         id: minecraft:skeleton
+
+layout:
+  - - B

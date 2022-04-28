@@ -1,0 +1,22 @@
+size: [9, 6, 9]
+
+# Place a base template, using the palette to place the spawner directly.
+
+palette:
+  B:
+    type: template
+    template: box_dungeon:base
+  S:
+    type: block
+    name: minecraft:spawner
+    data:
+      SpawnData:
+        id: minecraft:zombie
+
+layout:
+  - - .
+    - .
+    - .
+    - .
+    - ....S
+  - - B

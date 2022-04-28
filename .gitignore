@@ -5,9 +5,9 @@ dist/**
 
 __pycache__
 .python-version
-/.venv/
+.venv
 
-/.vscode/
+.vscode
 
-/.beet_cache/
-/.beet_output/
+.beet_cache
+.beet_output

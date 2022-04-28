@@ -1,0 +1,8 @@
+output: .beet_output/tests/fleecy_box
+
+data_pack:
+  load: src
+
+require:
+  - mcblueprints
+  - beet.contrib.auto_yaml

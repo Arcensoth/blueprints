@@ -10,5 +10,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Initial working prototype
 
-[unreleased]: https://github.com/Arcensoth/pyckaxe/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/Arcensoth/pyckaxe/releases/tag/v0.1.0
+[unreleased]: https://github.com/Arcensoth/blueprints/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/Arcensoth/blueprints/releases/tag/v0.1.0

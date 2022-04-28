@@ -1,0 +1,8 @@
+output: .beet_output/tests/box_dungeon
+
+data_pack:
+  load: src
+
+require:
+  - mcblueprints
+  - beet.contrib.auto_yaml

@@ -1,0 +1,17 @@
+size: [9, 6, 9]
+
+# Place a base template, using variable expansion to specify the intended spawner.
+
+palette:
+  B:
+    type: template
+    template: box_dungeon:base_with_variable
+    # variables:
+    #   spawner:
+    #     name: minecraft:spawner
+    #     data:
+    #       SpawnData:
+    #         id: minecraft:spider
+
+layout:
+  - - B

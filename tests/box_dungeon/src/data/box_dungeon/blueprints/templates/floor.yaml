@@ -1,0 +1,15 @@
+size: [9, 1, 9]
+
+palette:
+  M: minecraft:mossy_cobblestone
+
+layout:
+  - - MMMMMMMMM
+    - MMMMMMMMM
+    - MMMMMMMMM
+    - MMMMMMMMM
+    - MMMMMMMMM
+    - MMMMMMMMM
+    - MMMMMMMMM
+    - MMMMMMMMM
+    - MMMMMMMMM
