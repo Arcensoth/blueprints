@@ -105,7 +105,7 @@ class TemplateTemplatePaletteEntry(BaseModel):
 class TemplateLayout(BaseModel):
     __root__: list[list[str]]
 
-    @validator("__root__")
+    @validator("__root__", pre=True)
     def root_in_reverse(cls, value: Any):
         if not isinstance(value, list):
             raise ValueError(f"Expected layout to be a `str` but got: f{value}")

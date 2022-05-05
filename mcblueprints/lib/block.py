@@ -21,7 +21,7 @@ class Block(NormalizableModel):
             return dict(name=value)
         return value
 
-    @validator("data")
+    @validator("data", pre=True)
     def data_to_nbt(cls, value: Any):
         if value is not None:
             return to_nbt(value)
