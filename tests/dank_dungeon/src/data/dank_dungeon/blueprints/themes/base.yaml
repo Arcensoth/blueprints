@@ -1,0 +1,35 @@
+elements:
+  air: minecraft:air
+  chiseled_bricks: minecraft:chiseled_stone_bricks
+
+  bricks: minecraft:stone_bricks
+  ground: minecraft:dirt
+  stone: minecraft:stone
+
+  arch_slant_x_p:
+    name: minecraft:stone_brick_stairs
+    state:
+      facing: north
+      half: top
+      shape: straight
+
+  arch_slant_x_q:
+    name: minecraft:stone_brick_stairs
+    state:
+      facing: south
+      half: top
+      shape: straight
+
+  arch_slant_z_p:
+    name: minecraft:stone_brick_stairs
+    state:
+      facing: west
+      half: top
+      shape: straight
+
+  arch_slant_z_q:
+    name: minecraft:stone_brick_stairs
+    state:
+      facing: east
+      half: top
+      shape: straight

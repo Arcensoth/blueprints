@@ -1,0 +1,32 @@
+elements:
+  bricks: minecraft:mossy_stone_bricks
+  ground: minecraft:grass_block
+  stone: minecraft:mossy_cobblestone
+
+  arch_slant_x_p:
+    name: minecraft:mossy_stone_brick_stairs
+    state:
+      facing: north
+      half: top
+      shape: straight
+
+  arch_slant_x_q:
+    name: minecraft:mossy_stone_brick_stairs
+    state:
+      facing: south
+      half: top
+      shape: straight
+
+  arch_slant_z_p:
+    name: minecraft:mossy_stone_brick_stairs
+    state:
+      facing: west
+      half: top
+      shape: straight
+
+  arch_slant_z_q:
+    name: minecraft:mossy_stone_brick_stairs
+    state:
+      facing: east
+      half: top
+      shape: straight

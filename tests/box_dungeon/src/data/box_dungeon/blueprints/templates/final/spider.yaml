@@ -6,12 +6,14 @@ palette:
   B:
     type: template
     template: box_dungeon:base_with_variable
-    # variables:
-    #   spawner:
-    #     name: minecraft:spawner
-    #     data:
-    #       SpawnData:
-    #         id: minecraft:spider
+    variables:
+      myspawner:
+        type: block
+        block:
+          name: minecraft:spawner
+          data:
+            SpawnData:
+              id: minecraft:spider
 
 layout:
   - - B

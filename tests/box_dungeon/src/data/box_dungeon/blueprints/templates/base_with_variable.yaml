@@ -7,7 +7,7 @@ palette:
   W:
     type: template
     template: box_dungeon:wall_layer
-  S: "$xxx"
+  S: "$myspawner"
 
 layout:
   - - W

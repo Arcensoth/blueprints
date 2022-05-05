@@ -1,8 +1,0 @@
-- type: keep
-  keep:
-    - dank_dungeon:stone/base
-
-- type: replace
-  replace:
-    - dank_dungeon:stone/base
-  replacement: dank_dungeon:stone/treasure

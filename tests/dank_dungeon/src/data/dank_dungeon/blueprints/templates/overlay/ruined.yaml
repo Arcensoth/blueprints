@@ -1,0 +1,10 @@
+size: [9, 9, 9]
+
+palette:
+  B:
+    type: template
+    template: dank_dungeon:base
+    filter: dank_dungeon:ruined
+
+layout:
+  - - B

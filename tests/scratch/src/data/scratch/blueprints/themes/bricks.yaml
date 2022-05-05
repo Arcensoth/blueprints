@@ -1,3 +1,4 @@
+# Themes are essentially just a centrally-maintained list of blocks by key.
 elements:
   wall: minecraft:stone_bricks
   floor: minecraft:polished_andesite

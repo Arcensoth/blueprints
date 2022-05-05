@@ -5,7 +5,7 @@ size: [5, 5, 5]
 # The palette maps characters to different types of palette entries that describe how to
 # populate the structure. These can be blocks as well as other layouts.
 palette:
-  # Strings are assumed to be basic blocks.
+  # Basic blocks are permitted in string form.
   _: minecraft:air
   g: minecraft:glass
   c: minecraft:glowstone
@@ -13,23 +13,26 @@ palette:
   # To define block states, use the block type entry.
   P:
     type: block
-    name: minecraft:quartz_pillar
-    state:
-      axis: y
+    block:
+      name: minecraft:quartz_pillar
+      state:
+        axis: y
   X:
     type: block
-    name: minecraft:tnt
-    state:
-      unstable: true
+    block:
+      name: minecraft:tnt
+      state:
+        unstable: true
   # To define NBT data, use the block type entry.
   T:
     type: block
-    name: minecraft:trapped_chest
-    data:
-      Items:
-        - id: minecraft:diamond
-          Count: 1b
-          Slot: 13b
+    block:
+      name: minecraft:trapped_chest
+      data:
+        Items:
+          - id: minecraft:diamond
+            Count: 1b
+            Slot: 13b
 
 # The layout is a 2-D list of strings (a 3-D list of characters) that says how to build
 # the structure, piece by piece, using the palette. Note that the first section of the

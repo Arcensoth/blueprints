@@ -1,6 +1,8 @@
-# size: [9, 9, 9]
+# Here we neglect to indicate a bounding size for the structure. This will cause the
+# structure to "shrink wrap" when it is generated, taking on a minimal size.
 
 palette:
+  # Blocks via basic block entires.
   a: minecraft:stone
   b: minecraft:dirt
   c:
@@ -23,6 +25,10 @@ palette:
       data:
         SpawnData:
           id: minecraft:spider
+
+  # Blocks via block provider. A block provider is a generalized interface for defining
+  # something that can be used as a block. This is more verbose, which is why the prior
+  # method exists. It is allowed here because it is allowed for all block providers.
   g:
     type: block_provider
     provider: minecraft:coal_block
@@ -38,6 +44,8 @@ palette:
       block:
         name: minecraft:crying_obsidian
 
+  # Blocks via theme. Themes can be defined as a separate customer resource and provide
+  # the ability to define a collection of blocks all in one place.
   q: "@scratch:bricks[wall]"
   r: "@scratch:bricks[floor]"
   s: "@scratch:bricks[wall.cracked]"
@@ -57,6 +65,9 @@ palette:
         theme: scratch:bricks
         element: concrete.green
 
+  # Blocks via variables. These are effectively placeholder blocks that can be replaced
+  # by other templates that include this template, without having to fiddle with real
+  # blocks.
   w: "$myblock"
   x:
     type: block_provider

@@ -1,18 +1,22 @@
-# size: [9, 9, 9]
-
 palette:
   B:
     type: template
     template: scratch:base
     variables:
-      # myblock: "$red_spawner"
+      # Showing all the different ways block providers can be used. Note that a variable
+      # (placeholder) block can be replaced by a block normally or via theme, or it can
+      # also be replaced by yet another variable.
+      myblock: minecraft:beacon
       # myblock:
-      #   type: variable
-      #   variable: blue_spawner
+      #   type: block
+      #   block: minecraft:glowstone
       # myblock:
-      #   type: variable
-      #   variable:
-      #     name: green_spawner
+      #   type: block
+      #   block:
+      #     name: minecraft:spawner
+      #     data:
+      #       SpawnData:
+      #         id: minecraft:skeleton
 
       # myblock: "@scratch:bricks[spawner.zombie]"
       # myblock: "@scratch:bricks[observer]"
@@ -25,17 +29,14 @@ palette:
       #     theme: scratch:bricks
       #     element: concrete.blue
 
-      myblock: minecraft:beacon
+      # myblock: "$red_spawner"
       # myblock:
-      #   type: block
-      #   block: minecraft:glowstone
+      #   type: variable
+      #   variable: blue_spawner
       # myblock:
-      #   type: block
-      #   block:
-      #     name: minecraft:spawner
-      #     data:
-      #       SpawnData:
-      #         id: minecraft:skeleton
+      #   type: variable
+      #   variable:
+      #     name: green_spawner
 
 layout:
   - - B

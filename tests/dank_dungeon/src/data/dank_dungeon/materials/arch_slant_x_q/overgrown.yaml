@@ -1,5 +1,0 @@
-name: minecraft:mossy_stone_brick_stairs
-state:
-  facing: south
-  half: top
-  shape: straight

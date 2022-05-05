@@ -11,10 +11,12 @@ palette:
       replace:
         - minecraft:spawner
       replacement:
-        name: minecraft:spawner
-        data:
-          SpawnData:
-            id: minecraft:skeleton
+        type: block
+        block:
+          name: minecraft:spawner
+          data:
+            SpawnData:
+              id: minecraft:skeleton
 
 layout:
   - - B

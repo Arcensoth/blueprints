@@ -1,0 +1,20 @@
+size: [1, 7, 7]
+
+# Anchor to the top-middle of the arch.
+anchor: [0, 6, 3]
+
+palette:
+  B: "@dank_dungeon:base[bricks]"
+  C: "@dank_dungeon:base[chiseled_bricks]"
+  s: "@dank_dungeon:base[stone]"
+  p: "@dank_dungeon:base[arch_slant_x_p]"
+  q: "@dank_dungeon:base[arch_slant_x_q]"
+
+layout:
+  - - BBBBBBB
+  - - Bp   qB
+  - - B     B
+  - - C     C
+  - - s     s
+  - - s     s
+  - - s     s

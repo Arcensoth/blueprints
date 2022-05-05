@@ -1,0 +1,8 @@
+- type: keep
+  keep:
+    - "@dank_dungeon:base[stone]"
+
+- type: replace
+  replace:
+    - "@dank_dungeon:base[stone]"
+  replacement: "@dank_dungeon:treasure[stone]"

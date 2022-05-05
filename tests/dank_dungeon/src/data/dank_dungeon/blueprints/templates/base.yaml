@@ -1,0 +1,104 @@
+size: [9, 9, 9]
+
+palette:
+  _: "@dank_dungeon:base[air]"
+  B: "@dank_dungeon:base[bricks]"
+  s: "@dank_dungeon:base[stone]"
+  o: "@dank_dungeon:base[ground]"
+  X:
+    type: template
+    template: dank_dungeon:prop/arch_x
+  Z:
+    type: template
+    template: dank_dungeon:prop/arch_z
+
+layout:
+  - - BBBBBBBBB
+    - BBBBBBBBB
+    - BBBBBBBBB
+    - BBBsssBBB
+    - BBBsssBBB
+    - BBBsssBBB
+    - BBBBBBBBB
+    - BBBBBBBBB
+    - BBBBBBBBB
+
+  - - BsssssssB
+    - s___X___s
+    - s_______s
+    - s_______s
+    - sZ_____Zs
+    - s_______s
+    - s_______s
+    - s___X___s
+    - BsssssssB
+
+  - - BsssssssB
+    - s_______s
+    - s_______s
+    - s_______s
+    - s_______s
+    - s_______s
+    - s_______s
+    - s_______s
+    - BsssssssB
+
+  - - BsssssssB
+    - s_______s
+    - s_______s
+    - s_______s
+    - s_______s
+    - s_______s
+    - s_______s
+    - s_______s
+    - BsssssssB
+
+  - - BsssssssB
+    - s_______s
+    - s_______s
+    - s_______s
+    - s_______s
+    - s_______s
+    - s_______s
+    - s_______s
+    - BsssssssB
+
+  - - BsssssssB
+    - s_______s
+    - s_______s
+    - s_______s
+    - s_______s
+    - s_______s
+    - s_______s
+    - s_______s
+    - BsssssssB
+
+  - - BsssssssB
+    - s_______s
+    - s_______s
+    - s_______s
+    - s_______s
+    - s_______s
+    - s_______s
+    - s_______s
+    - BsssssssB
+
+  - - BsssssssB
+    - s_______s
+    - s_______s
+    - s_______s
+    - s_______s
+    - s_______s
+    - s_______s
+    - s_______s
+    - BsssssssB
+
+  - - BBBBBBBBB
+    - BBBBBBBBB
+    - BBBBBBBBB
+    - BBBoooBBB
+    - BBBoooBBB
+    - BBBoooBBB
+    - BBBBBBBBB
+    - BBBBBBBBB
+    - BBBBBBBBB

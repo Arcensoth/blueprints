@@ -8,10 +8,11 @@ palette:
     template: box_dungeon:base
   S:
     type: block
-    name: minecraft:spawner
-    data:
-      SpawnData:
-        id: minecraft:zombie
+    block:
+      name: minecraft:spawner
+      data:
+        SpawnData:
+          id: minecraft:zombie
 
 layout:
   - - .

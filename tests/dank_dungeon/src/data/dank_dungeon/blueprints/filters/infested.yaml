@@ -1,0 +1,14 @@
+- type: keep
+  keep:
+    - "@dank_dungeon:base[bricks]"
+    - "@dank_dungeon:base[stone]"
+
+- type: replace
+  replace:
+    - "@dank_dungeon:base[bricks]"
+  replacement: "@dank_dungeon:infested[bricks]"
+
+- type: replace
+  replace:
+    - "@dank_dungeon:base[stone]"
+  replacement: "@dank_dungeon:infested[stone]"

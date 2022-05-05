@@ -1,0 +1,44 @@
+- type: keep
+  keep:
+    - "@dank_dungeon:base[bricks]"
+    - "@dank_dungeon:base[stone]"
+    - "@dank_dungeon:base[ground]"
+    - "@dank_dungeon:base[arch_slant_x_p]"
+    - "@dank_dungeon:base[arch_slant_x_q]"
+    - "@dank_dungeon:base[arch_slant_z_p]"
+    - "@dank_dungeon:base[arch_slant_z_q]"
+
+- type: replace
+  replace:
+    - "@dank_dungeon:base[bricks]"
+  replacement: "@dank_dungeon:ruined[bricks]"
+
+- type: replace
+  replace:
+    - "@dank_dungeon:base[stone]"
+  replacement: "@dank_dungeon:ruined[stone]"
+
+- type: replace
+  replace:
+    - "@dank_dungeon:base[ground]"
+  replacement: "@dank_dungeon:ruined[ground]"
+
+- type: replace
+  replace:
+    - "@dank_dungeon:base[arch_slant_x_p]"
+  replacement: "@dank_dungeon:ruined[arch_slant_x_p]"
+
+- type: replace
+  replace:
+    - "@dank_dungeon:base[arch_slant_x_q]"
+  replacement: "@dank_dungeon:ruined[arch_slant_x_q]"
+
+- type: replace
+  replace:
+    - "@dank_dungeon:base[arch_slant_z_p]"
+  replacement: "@dank_dungeon:ruined[arch_slant_z_p]"
+
+- type: replace
+  replace:
+    - "@dank_dungeon:base[arch_slant_z_q]"
+  replacement: "@dank_dungeon:ruined[arch_slant_z_q]"
