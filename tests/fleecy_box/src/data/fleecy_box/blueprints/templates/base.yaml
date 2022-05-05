@@ -16,7 +16,7 @@ palette:
     block:
       name: minecraft:quartz_pillar
       state:
-        axis: y
+        axis: "y"
   X:
     type: block
     block:

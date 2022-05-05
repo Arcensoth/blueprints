@@ -2,7 +2,7 @@ from typing import Any, Iterable, Optional
 
 from pydantic import validator
 
-from mcblueprints.lib.block_state import BlockState, BlockStateValue
+from mcblueprints.lib.block_state import BlockState
 from mcblueprints.lib.nbt import NbtCompound, to_nbt
 from mcblueprints.lib.normalizable_model import NormalizableModel
 from mcblueprints.lib.utils import is_submapping
@@ -59,6 +59,6 @@ class Block(NormalizableModel):
         """Check whether this `Block` is a subset of all others."""
         return all(self.matches(other) for other in others)
 
-    def with_state(self, **states: BlockStateValue) -> "Block":
+    def with_state(self, **states: Any) -> "Block":
         """Return a new block with its own state."""
         return self.copy(update=dict(state=BlockState(__root__=states)))
