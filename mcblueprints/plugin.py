@@ -13,7 +13,7 @@ __all__ = ["beet_default"]
 
 
 class BlueprintsOptions(BaseModel):
-    data_version: int = 3092
+    data_version: int = 3095  # 22w18a
     output_location: str = "{namespace}:{path}"
 
 
