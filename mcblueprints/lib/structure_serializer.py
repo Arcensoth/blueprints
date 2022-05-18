@@ -1,14 +1,14 @@
 from dataclasses import dataclass
 from typing import Any
 
-from mcblueprints.lib.nbt import StructureFileData
 from mcblueprints.lib.structure_data import (
     StructureBlockEntry,
     StructureData,
     StructureEntityEntry,
     StructurePaletteEntry,
 )
-from mcblueprints.lib.vec import Vec3
+from mcblueprints.lib.types import Vec3
+from mcblueprints.utils.nbt import StructureFileData
 
 
 @dataclass(frozen=True)

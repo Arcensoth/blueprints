@@ -14,7 +14,7 @@ from nbtlib.tag import Long as NbtLong
 from nbtlib.tag import Short as NbtShort
 from nbtlib.tag import String as NbtString
 
-__all__ = (
+__all__ = [
     "StructureFileData",
     "NbtPath",
     "NbtBase",
@@ -32,7 +32,7 @@ __all__ = (
     "to_nbt",
     "to_nbt_compound",
     "to_nbt_path",
-)
+]
 
 BYTE_PATTERN = re.compile(r"^(-?\d+)[bB]$")
 SHORT_PATTERN = re.compile(r"^(-?\d+)[sS]$")

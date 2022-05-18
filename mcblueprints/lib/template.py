@@ -10,7 +10,7 @@ from mcblueprints.lib.filter import FilterLink
 from mcblueprints.lib.normalizable_model import NormalizableModel
 from mcblueprints.lib.structure_data import StructureData
 from mcblueprints.lib.template_variable import TemplateVariable
-from mcblueprints.lib.vec import Vec3
+from mcblueprints.lib.types import Vec3
 
 __all__ = ["Template", "TemplateLink", "TemplateFile"]
 

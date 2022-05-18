@@ -2,19 +2,14 @@ import logging
 from dataclasses import dataclass
 
 from beet import Context, Structure, configurable
-from pydantic import BaseModel
 
 from mcblueprints.lib import FilterFile, TemplateFile, ThemeFile
 from mcblueprints.lib.structure_serializer import StructureSerializer
+from mcblueprints.options import BlueprintsOptions
 
 LOG = logging.getLogger("blueprints")
 
 __all__ = ["beet_default"]
-
-
-class BlueprintsOptions(BaseModel):
-    data_version: int = 3095  # 22w18a
-    output_location: str = "{namespace}:{path}"
 
 
 def beet_default(ctx: Context):

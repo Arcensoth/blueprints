@@ -9,7 +9,7 @@ from mcblueprints.lib.structure_data import (
     StructureData,
     StructurePaletteEntry,
 )
-from mcblueprints.lib.vec import Vec3
+from mcblueprints.lib.types import Vec3
 
 __all__ = ["BlockMap"]
 

@@ -2,8 +2,8 @@ from typing import Any, MutableMapping
 
 from pydantic import BaseModel, Field
 
-from mcblueprints.lib.nbt import NbtCompound, NbtString
-from mcblueprints.lib.utils import is_submapping
+from mcblueprints.utils import is_submapping
+from mcblueprints.utils.nbt import NbtCompound, NbtString
 
 __all__ = ["BlockState"]
 

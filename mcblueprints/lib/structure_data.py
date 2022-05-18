@@ -2,8 +2,8 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 from mcblueprints.lib.block import Block
-from mcblueprints.lib.nbt import NbtCompound
-from mcblueprints.lib.vec import Vec3
+from mcblueprints.lib.types import Vec3
+from mcblueprints.utils.nbt import NbtCompound
 
 
 @dataclass

@@ -3,9 +3,9 @@ from typing import Any, Iterable, Optional
 from pydantic import validator
 
 from mcblueprints.lib.block_state import BlockState
-from mcblueprints.lib.nbt import NbtCompound, to_nbt
 from mcblueprints.lib.normalizable_model import NormalizableModel
-from mcblueprints.lib.utils import is_submapping
+from mcblueprints.utils import is_submapping
+from mcblueprints.utils.nbt import NbtCompound, to_nbt
 
 __all__ = ["Block"]
 

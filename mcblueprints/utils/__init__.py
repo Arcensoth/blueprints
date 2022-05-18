@@ -1,7 +1,5 @@
 from typing import Any, Mapping
 
-__all__ = ("is_submapping",)
-
 
 def is_submapping(subdict: Mapping[str, Any], superdict: Mapping[str, Any]) -> bool:
     sub_items = subdict.items()
