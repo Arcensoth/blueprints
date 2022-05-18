@@ -91,26 +91,31 @@ class BlockMap:
         return row.get(z)
 
     def remove_blocks(self, blocks: list[Block]):
+        # Collect positions to remove first because we can't mutate during iteration.
+        positions: list[Vec3] = []
         for position, block in self:
             if block.matches_any_of(blocks):
                 del self[position]
-                continue
+        for position in positions:
+            del self[position]
 
     def keep_blocks(self, blocks: list[Block]):
-        positions_to_remove: list[Vec3] = []
         # Collect positions to remove first because we can't mutate during iteration.
+        positions: list[Vec3] = []
         for position, block in self:
-            if block.matches_any_of(blocks):
-                continue
-            positions_to_remove.append(position)
-        for position in positions_to_remove:
+            if not block.matches_any_of(blocks):
+                positions.append(position)
+        for position in positions:
             del self[position]
 
     def replace_blocks(self, blocks: list[Block], replacement: Block):
+        # Collect positions to replace first because we can't mutate during iteration.
+        positions: list[Vec3] = []
         for position, block in self:
             if block.matches_any_of(blocks):
-                self[position] = replacement
-                continue
+                positions.append(position)
+        for position in positions:
+            self[position] = replacement
 
     def scan(self, block: Block) -> Iterable[Vec3]:
         yield from (position for position, b in self if b == block)
