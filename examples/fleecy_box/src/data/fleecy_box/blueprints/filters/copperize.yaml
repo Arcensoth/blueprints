@@ -1,19 +1,22 @@
-# Replace one block with another block.
+# Replace certain blocks with another block.
 - type: replace
   replace:
     - minecraft:bricks
+    - minecraft:tnt
   replacement: minecraft:cut_copper
 - type: replace
   replace:
     - minecraft:glowstone
+    - minecraft:quartz_pillar
   replacement: minecraft:copper_block
 - type: replace
   replace:
     - minecraft:trapped_chest
   replacement: minecraft:beacon
 
-# Keep only the listed blocks, discarding the rest.
+# Keep only certain blocks, discarding the rest.
 - type: keep
   keep:
     - minecraft:copper_block
     - minecraft:cut_copper
+    - minecraft:beacon
