@@ -1,5 +1,3 @@
-# output: .beet_output/tests/scratch
-
 data_pack:
   load: src
 
