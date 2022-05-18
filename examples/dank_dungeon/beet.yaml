@@ -1,4 +1,4 @@
-output: .beet_output/tests/fleecy_box
+# output: .beet_output/tests/dank_dungeon
 
 data_pack:
   load: src

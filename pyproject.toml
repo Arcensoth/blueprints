@@ -13,12 +13,14 @@ keywords = ["minecraft", "structures", "blueprints", "datapacks"]
 python = "^3.10"
 pydantic = "^1.9.0"
 nbtlib = "^1.12.1"
-beet = ">=0.62.0"
+beet = ">=0.64.1"
 
 [tool.poetry.dev-dependencies]
-black = "^22.1.0"
+black = "^22.3.0"
 isort = "^5.10.1"
 rope = "^0.22.0"
+pytest = "^7.1.2"
+pytest-insta = "^0.1.11"
 
 [tool.pyright]
 typeCheckingMode = "strict"
