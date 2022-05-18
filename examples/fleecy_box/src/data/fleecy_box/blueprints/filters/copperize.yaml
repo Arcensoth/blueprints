@@ -3,11 +3,14 @@
   replace:
     - minecraft:bricks
   replacement: minecraft:cut_copper
-
 - type: replace
   replace:
     - minecraft:glowstone
   replacement: minecraft:copper_block
+- type: replace
+  replace:
+    - minecraft:trapped_chest
+  replacement: minecraft:beacon
 
 # Keep only the listed blocks, discarding the rest.
 - type: keep
