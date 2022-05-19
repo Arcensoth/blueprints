@@ -57,12 +57,15 @@ See the [example packs] for a complete set of examples.
 > [data/fleecy_box/blueprints/templates/base.yaml](./examples/fleecy_box/src/data/fleecy_box/blueprints/templates/base.yaml)
 
 ```yaml
-# Restrict the size of the structure. An error will be raised if anything extends
-# outside of these bounds. This goes by (x, y, z) or (length x height x width).
+# Optionally restrict the size of the structure. An error will be raised if anything
+# extends outside of these bounds. This goes by (x, y, z) or (length x height x width).
+# Omitting this field will cause the structure to "shrink wrap" when it is generated,
+# taking on a minimal size.
 size: [5, 5, 5]
 
 # The palette maps characters to different types of palette entries that describe how to
-# populate the structure. These can be blocks as well as other layouts.
+# populate the structure. These can be blocks as well as other layouts. Note that spaces
+# and dots `.` are automatically treated as void space and excluded from the structure.
 palette:
   # Basic blocks are permitted in string form.
   _: minecraft:air
@@ -93,39 +96,40 @@ palette:
             Count: 1b
             Slot: 13b
 
-# The layout is a 2-D list of strings (a 3-D list of characters) that says how to build
-# the structure, piece by piece, using the palette. Note that the first section of the
-# layout corresponds to the top-most layer of blocks in the structure.
-layout:
-  - - ggggg
-    - ggggg
-    - ggggg
-    - ggggg
-    - ggggg
+# The layout can be either a multi-line string, or a 2-D list of strings (a 3-D list of
+# characters) that says how to build the structure, piece by piece, using the palette.
+# Note that the first section of the layout corresponds to the top-most layer of blocks
+# in the structure.
+layout: |
+  ggggg
+  ggggg
+  ggggg
+  ggggg
+  ggggg
 
-  - - ggggg
-    - g___g
-    - g___g
-    - g___g
-    - ggggg
+  ggggg
+  g___g
+  g___g
+  g___g
+  ggggg
 
-  - - ggggg
-    - g___g
-    - g_T_g
-    - g___g
-    - ggggg
+  ggggg
+  g___g
+  g_T_g
+  g___g
+  ggggg
 
-  - - cgggc
-    - g___g
-    - g_P_g
-    - g___g
-    - cgggc
+  cgggc
+  g___g
+  g_P_g
+  g___g
+  cgggc
 
-  - - bbbbb
-    - bbbbb
-    - bbXbb
-    - bbbbb
-    - bbbbb
+  bbbbb
+  bbbbb
+  bbXbb
+  bbbbb
+  bbbbb
 ```
 
 ### `fleecy_box:copper`
