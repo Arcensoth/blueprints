@@ -3,6 +3,7 @@ from typing import Annotated, Any, Iterable, Literal, Optional, Union, cast
 from beet import Context, FileDeserialize, JsonFileBase
 from pydantic import BaseModel, Field, validator
 
+from mcblueprints import utils
 from mcblueprints.lib.block import Block
 from mcblueprints.lib.block_map import BlockMap
 from mcblueprints.lib.block_provider import BlockProvider
@@ -106,47 +107,12 @@ class TemplateLayout(BaseModel):
     __root__: list[list[str]]
 
     @validator("__root__", pre=True)
-    def root_in_reverse(cls, value: Any):
-        if not isinstance(value, list):
-            raise ValueError(f"Expected layout to be a `str` but got: f{value}")
-
-        raw_layout = cast(list[Any], value)
-
-        layout: list[list[str]] = []
-
-        # Read the layout upside-down.
-        for i, raw_layer in enumerate(reversed(raw_layout)):
-            if raw_layer is None:
-                layout.append([])
-                continue
-
-            if isinstance(raw_layer, str):
-                raw_layer = list(raw_layer)
-
-            if not isinstance(raw_layer, list):
-                raise ValueError(
-                    f"Expected layer {i} to be a `str` or `list`, but got: {raw_layer}"
-                )
-
-            raw_layer = cast(list[Any], raw_layer)
-
-            layer: list[str] = []
-
-            for j, raw_row in enumerate(raw_layer):
-                if raw_row is None:
-                    layer.append("")
-                    continue
-
-                if not isinstance(raw_row, str):
-                    raise ValueError(
-                        f"Expected row {j} in layer {i} to be a `str`, but got: {raw_row}"
-                    )
-
-                layer.append(raw_row)
-
-            layout.append(layer)
-
-        return layout
+    def parse_root(cls, value: Any):
+        if isinstance(value, list):
+            return utils.charmap_from_list(cast(list[Any], value))
+        elif isinstance(value, str):
+            return utils.charmap_from_str(value)
+        raise ValueError(f"Expected layout to be a `list` or `str` but got: f{value}")
 
 
 class Template(BaseModel):

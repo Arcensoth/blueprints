@@ -1,0 +1,22 @@
+palette:
+  x: minecraft:stone
+  o: minecraft:beacon
+
+layout: |
+  xxxxx
+  x   x
+  x   x
+  x   x
+  xxxxx
+
+  xxxxx
+  x   x
+  x o x
+  x   x
+  xxxxx
+
+  xxxxx
+  xxxxx
+  xxxxx
+  xxxxx
+  xxxxx
