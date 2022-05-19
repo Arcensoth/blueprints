@@ -35,8 +35,9 @@ def blueprints(ctx: Context, opts: BlueprintsOptions):
             namespace, _, path = name.partition(":")
             location = opts.output_location.format(namespace=namespace, path=path)
             ctx.data[location] = structure
-        except:
+        except Exception as ex:
             LOG.exception(f"Error while building template: {name}")
+            raise ex
 
 
 @dataclass
