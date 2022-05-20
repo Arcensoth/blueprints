@@ -33,6 +33,7 @@ class BlockState(BaseModel, MutableMapping[str, Any]):
     def __len__(self):
         return self.__root__.__len__()
 
+    # FIXME Why does Pydantic implement `__iter__` -> `TupleGenerator`?
     # @implements MutableMapping
     def __iter__(self):  # type: ignore
         return self.__root__.__iter__()

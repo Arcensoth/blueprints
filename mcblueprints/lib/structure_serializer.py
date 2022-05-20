@@ -7,7 +7,7 @@ from mcblueprints.lib.structure_data import (
     StructureEntityEntry,
     StructurePaletteEntry,
 )
-from mcblueprints.lib.types import Vec3
+from mcblueprints.lib.vec import Vec3
 from mcblueprints.utils.nbt import StructureFileData
 
 
@@ -29,8 +29,8 @@ class StructureSerializer:
             }
         )
 
-    def serialize_size(self, size: Vec3) -> Any:
-        return [int(c) for c in size]
+    def serialize_size(self, size: Vec3[int]) -> Any:
+        return [int(c) for c in size.components]
 
     def serialize_palette(self, palette: list[StructurePaletteEntry]) -> Any:
         serialized_palette: list[Any] = []
@@ -49,7 +49,7 @@ class StructureSerializer:
         for block_entry in blocks:
             serialized_block_entry: dict[str, Any] = {
                 "state": block_entry.state,
-                "pos": [int(c) for c in block_entry.pos],
+                "pos": [int(c) for c in block_entry.pos.components],
             }
             if block_entry.nbt:
                 serialized_block_entry["nbt"] = block_entry.nbt
@@ -59,8 +59,8 @@ class StructureSerializer:
     def serialize_entities(self, entities: list[StructureEntityEntry]) -> Any:
         return [
             {
-                "pos": [float(c) for c in entity_entry.pos],
-                "blockPos": [int(c) for c in entity_entry.pos],
+                "pos": [float(c) for c in entity_entry.pos.components],
+                "blockPos": [int(c) for c in entity_entry.pos.components],
                 "nbt": entity_entry.nbt,
             }
             for entity_entry in entities

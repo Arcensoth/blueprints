@@ -1,5 +1,5 @@
 import re
-from typing import Any, Dict, List, Tuple, Union, cast
+from typing import Any, Dict, List, Tuple, Union
 
 from nbtlib.contrib.minecraft.structure import StructureFileData
 from nbtlib.path import Path as NbtPath
@@ -76,11 +76,9 @@ def to_nbt(value: Any) -> NbtBase:
     if isinstance(value, float):
         return NbtFloat(value)
     if isinstance(value, dict):
-        value = cast(Dict[str, Any], value)
-        return NbtCompound({k: to_nbt(v) for k, v in value.items()})
+        return NbtCompound({k: to_nbt(v) for k, v in value.items()})  # type: ignore
     if isinstance(value, (list, tuple)):
-        value = cast(List[Any], value)
-        return NbtList([to_nbt(v) for v in value])
+        return NbtList([to_nbt(v) for v in value])  # type: ignore
     raise ValueError(f"Cannot convert value to NBT: {value}")
 
 

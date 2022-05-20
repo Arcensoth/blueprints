@@ -9,138 +9,139 @@ from mcblueprints.lib.structure_data import (
     StructureData,
     StructurePaletteEntry,
 )
-from mcblueprints.lib.types import Vec3
+from mcblueprints.lib.vec import Vec3
 
 __all__ = ["BlockMap"]
 
 
 @dataclass
 class BlockMap:
-    size: Vec3 | Literal["auto"]
+    size: Vec3[int] | Literal["auto"]
 
     # y -> x -> z
     block_map: DefaultDict[int, DefaultDict[int, dict[int, Block]]]
 
     SYMBOLS: ClassVar[str] = string.digits + string.ascii_letters
 
-    def __init__(self, size: Vec3 | Literal["auto"]):
+    def __init__(self, size: Vec3[int] | Literal["auto"]):
         self.size = size
         self.block_map = defaultdict(lambda: defaultdict(dict))
 
     def __str__(self) -> str:
         return self.to_ascii()
 
-    def __setitem__(self, key: Vec3, value: Block):
-        x, y, z = key
-        if not self._in_bounds(x, y, z):
-            raise ValueError(
-                f"Position ({x}, {y}, {z}) exceeds block map size ({self.size})"
-            )
-        self.block_map[y][x][z] = value
+    def __setitem__(self, key: Vec3[int], value: Block):
+        if not self.in_bounds(key):
+            raise ValueError(f"Position {key} exceeds block map size {self.size}")
+        self.block_map[key.y][key.x][key.z] = value
 
-    def __getitem__(self, key: Vec3) -> Block:
-        x, y, z = key
-        return self.block_map[y][x][z]
+    def __getitem__(self, key: Vec3[int]) -> Block:
+        return self.block_map[key.y][key.x][key.z]
 
-    def __delitem__(self, key: Vec3):
-        x, y, z = key
-        del self.block_map[y][x][z]
+    def __delitem__(self, key: Vec3[int]):
+        del self.block_map[key.y][key.x][key.z]
 
-    def __iter__(self) -> Iterator[tuple[Vec3, Block]]:
+    def __iter__(self) -> Iterator[tuple[Vec3[int], Block]]:
         for y, layer in self.block_map.items():
             for x, row in layer.items():
                 for z, block in row.items():
-                    yield (x, y, z), block
+                    yield Vec3[int](x, y, z), block
 
-    def _in_bounds(self, x: int, y: int, z: int) -> bool:
+    def in_bounds(self, position: Vec3[int]) -> bool:
         if self.size == "auto":
             return True
-        size_x, size_y, size_z = self.size
-        return (x < size_x) and (y < size_y) and (z < size_z)
+        size = self.size
+        return (
+            (0 <= position.x < size.x)
+            and (0 <= position.y < size.y)
+            and (0 <= position.z < size.z)
+        )
 
     @property
-    def actual_size(self) -> tuple[int, int, int]:
+    def is_empty(self) -> bool:
+        return len(self.block_map) == 0
+
+    @property
+    def corners(self) -> tuple[Vec3[int], Vec3[int]]:
+        if self.is_empty:
+            raise ValueError("Cannot calculate corners of empty block map")
+
+        positions = (pos for pos, _ in self)
+        first_pos = next(positions)
+
+        x_max, x_min = first_pos.x, first_pos.x
+        y_max, y_min = first_pos.y, first_pos.y
+        z_max, z_min = first_pos.z, first_pos.z
+
+        for pos in positions:
+            x_max, x_min = max(x_max, pos.x), min(x_min, pos.x)
+            y_max, y_min = max(y_max, pos.y), min(y_min, pos.y)
+            z_max, z_min = max(z_max, pos.z), min(z_min, pos.z)
+
+        low = Vec3[int](x_min, y_min, z_min)
+        high = Vec3[int](x_max, y_max, z_max)
+
+        return low, high
+
+    @property
+    def actual_size(self) -> Vec3[int]:
         if self.size != "auto":
             return self.size
+        if self.is_empty:
+            return Vec3[int](0, 0, 0)
+        low, high = self.corners
+        return high - low + 1
 
-        positions = ((x, y, z) for (x, y, z), _ in self)
-        first_position = next(positions, None)
-
-        if not first_position:
-            return (0, 0, 0)
-
-        first_x, first_y, first_z = first_position
-        x_max, x_min = first_x, first_x
-        y_max, y_min = first_y, first_y
-        z_max, z_min = first_z, first_z
-
-        for (x, y, z) in positions:
-            x_max, x_min = max(x_max, x), min(x_min, x)
-            y_max, y_min = max(y_max, y), min(y_min, y)
-            z_max, z_min = max(z_max, z), min(z_min, z)
-
-        size_x = 1 + x_max - x_min
-        size_y = 1 + y_max - y_min
-        size_z = 1 + z_max - z_min
-
-        return (size_x, size_y, size_z)
-
-    def get(self, key: Vec3) -> Optional[Block]:
-        x, y, z = key
-        row = self.block_map[y][x]
-        return row.get(z)
+    def get(self, key: Vec3[int]) -> Optional[Block]:
+        row = self.block_map[key.y][key.x]
+        return row.get(key.z)
 
     def remove_blocks(self, blocks: list[Block]):
         # Collect positions to remove first because we can't mutate during iteration.
-        positions: list[Vec3] = []
-        for position, block in self:
+        positions: list[Vec3[int]] = []
+        for pos, block in self:
             if block.matches_any_of(blocks):
-                del self[position]
-        for position in positions:
-            del self[position]
+                del self[pos]
+        for pos in positions:
+            del self[pos]
 
     def keep_blocks(self, blocks: list[Block]):
         # Collect positions to remove first because we can't mutate during iteration.
-        positions: list[Vec3] = []
-        for position, block in self:
+        positions: list[Vec3[int]] = []
+        for pos, block in self:
             if not block.matches_any_of(blocks):
-                positions.append(position)
-        for position in positions:
-            del self[position]
+                positions.append(pos)
+        for pos in positions:
+            del self[pos]
 
     def replace_blocks(self, blocks: list[Block], replacement: Block):
         # Collect positions to replace first because we can't mutate during iteration.
-        positions: list[Vec3] = []
-        for position, block in self:
+        positions: list[Vec3[int]] = []
+        for pos, block in self:
             if block.matches_any_of(blocks):
-                positions.append(position)
-        for position in positions:
-            self[position] = replacement
+                positions.append(pos)
+        for pos in positions:
+            self[pos] = replacement
 
-    def scan(self, block: Block) -> Iterable[Vec3]:
-        yield from (position for position, b in self if b == block)
+    def scan(self, block: Block) -> Iterable[Vec3[int]]:
+        yield from (pos for pos, b in self if b == block)
 
-    def merge(self, other: "BlockMap", position: Optional[Vec3] = None):
-        position = position or (0, 0, 0)
+    def merge(self, other: "BlockMap", position: Optional[Vec3[int]] = None):
+        position = position or Vec3[int](0, 0, 0)
         for offset, block in other:
-            new_pos = (
-                position[0] + offset[0],
-                position[1] + offset[1],
-                position[2] + offset[2],
-            )
-            self[new_pos] = block
+            self[position + offset] = block
 
     def to_ascii(self) -> str:
         next_symbol_index = 0
         symbol_by_block: dict[Block, str] = {}
         layers: list[str] = []
-        size_x, size_y, size_z = self.actual_size
-        for y in range(size_y):
+        low, high = self.corners
+        for y in range(low.y, high.y):
             rows: list[str] = []
-            for x in range(size_x):
+            for x in range(low.x, high.x):
                 line: str = ""
-                for z in range(size_z):
-                    block = self.get((x, y, z))
+                for z in range(low.z, high.z):
+                    block = self.get(Vec3[int](x, y, z))
                     if block is None:
                         line += "."
                         continue
@@ -161,7 +162,12 @@ class BlockMap:
         # Create the flat list of blocks, building a minimal palette as we go.
         palette_map: dict[str, StructurePaletteEntry] = {}
         blocks: list[StructureBlockEntry] = []
-        for position, block in self:
+        low, _ = self.corners
+        for pos, block in self:
+            # Recalibrate auto-sized structures.
+            actual_pos = pos
+            if self.size == "auto":
+                actual_pos -= low
             # Grab the corresponding palette entry from the palette map.
             palette_map_key = (
                 block.name if block.state is None else f"{block.name}{block.state}"
@@ -176,7 +182,7 @@ class BlockMap:
             # Create and append a new block entry using the palette entry's index.
             output_block_entry = StructureBlockEntry(
                 state=palette_map_entry.index,
-                pos=position,
+                pos=actual_pos,
             )
             # Note NBT is part of the block entry, not the palette.
             if block.data:

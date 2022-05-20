@@ -10,4 +10,4 @@ from .template import *
 from .template_variable import *
 from .theme import *
 from .theme_element import *
-from .types import *
+from .vec import *

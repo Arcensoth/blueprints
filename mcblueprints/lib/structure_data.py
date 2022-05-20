@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 from mcblueprints.lib.block import Block
-from mcblueprints.lib.types import Vec3
+from mcblueprints.lib.vec import Vec3
 from mcblueprints.utils.nbt import NbtCompound
 
 
@@ -15,19 +15,19 @@ class StructurePaletteEntry:
 @dataclass
 class StructureBlockEntry:
     state: int
-    pos: Vec3
+    pos: Vec3[int]
     nbt: Optional[NbtCompound] = None
 
 
 @dataclass
 class StructureEntityEntry:
-    pos: Vec3
+    pos: Vec3[float]
     nbt: NbtCompound
 
 
 @dataclass
 class StructureData:
-    size: Vec3
+    size: Vec3[int]
     palette: list[StructurePaletteEntry] = field(default_factory=list)
     blocks: list[StructureBlockEntry] = field(default_factory=list)
     entities: list[StructureEntityEntry] = field(default_factory=list)

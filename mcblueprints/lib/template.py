@@ -1,4 +1,4 @@
-from typing import Annotated, Any, Iterable, Literal, Optional, Union, cast
+from typing import Annotated, Any, Iterable, Literal, Optional, Union
 
 from beet import Context, FileDeserialize, JsonFileBase
 from pydantic import BaseModel, Field, validator
@@ -11,7 +11,7 @@ from mcblueprints.lib.filter import FilterLink
 from mcblueprints.lib.normalizable_model import NormalizableModel
 from mcblueprints.lib.structure_data import StructureData
 from mcblueprints.lib.template_variable import TemplateVariable
-from mcblueprints.lib.types import Vec3
+from mcblueprints.lib.vec import Vec3
 
 __all__ = ["Template", "TemplateLink", "TemplateFile"]
 
@@ -33,14 +33,14 @@ class TemplatePaletteEntry(NormalizableModel):
             return dict(type="block_provider", provider=value)
         return value
 
-    def merge(self, ctx: Context, block_map: BlockMap, position: Vec3):
+    def merge(self, ctx: Context, block_map: BlockMap, position: Vec3[int]):
         self.__root__.merge(ctx, block_map, position)
 
 
 class VoidTemplatePaletteEntry(BaseModel):
     type: Literal["void"]
 
-    def merge(self, ctx: Context, block_map: BlockMap, position: Vec3):
+    def merge(self, ctx: Context, block_map: BlockMap, position: Vec3[int]):
         # Void the block in the block map.
         del block_map[position]
 
@@ -50,7 +50,7 @@ class BlockTemplatePaletteEntry(BaseModel):
 
     block: Block
 
-    def merge(self, ctx: Context, block_map: BlockMap, position: Vec3):
+    def merge(self, ctx: Context, block_map: BlockMap, position: Vec3[int]):
         # Set the corresponding block in the block map.
         block_map[position] = self.block
 
@@ -60,7 +60,7 @@ class BlockProviderTemplatePaletteEntry(BaseModel):
 
     provider: BlockProvider
 
-    def merge(self, ctx: Context, block_map: BlockMap, position: Vec3):
+    def merge(self, ctx: Context, block_map: BlockMap, position: Vec3[int]):
         # Resolve the block from the provider.
         block = self.provider(ctx)
         # Set the corresponding block in the block map.
@@ -71,11 +71,11 @@ class TemplateTemplatePaletteEntry(BaseModel):
     type: Literal["template"]
 
     template: "TemplateLink"
-    offset: Vec3 = Field(default_factory=lambda: (0, 0, 0))
+    offset: Vec3[int] = Field(default_factory=lambda: Vec3[int](0, 0, 0))
     variables: dict[str, BlockProvider] = Field(default_factory=dict)
     filter: Optional[FilterLink] = None
 
-    def merge(self, ctx: Context, block_map: BlockMap, position: Vec3):
+    def merge(self, ctx: Context, block_map: BlockMap, position: Vec3[int]):
         # Resolve the child template.
         child_template = self.template(ctx)
 
@@ -95,11 +95,7 @@ class TemplateTemplatePaletteEntry(BaseModel):
             filter.__root__.apply(ctx, child_block_map)
 
         # Merge the converted child block map into the parent block map.
-        child_offset = (
-            position[0] - self.offset[0] - child_template.anchor[0],
-            position[1] - self.offset[1] - child_template.anchor[1],
-            position[2] - self.offset[2] - child_template.anchor[2],
-        )
+        child_offset = position - self.offset - child_template.anchor
         block_map.merge(child_block_map, child_offset)
 
 
@@ -109,23 +105,27 @@ class TemplateLayout(BaseModel):
     @validator("__root__", pre=True)
     def parse_root(cls, value: Any):
         if isinstance(value, list):
-            return utils.charmap_from_list(cast(list[Any], value))
+            return utils.charmap_from_list(value)  # type: ignore
         elif isinstance(value, str):
             return utils.charmap_from_str(value)
-        raise ValueError(f"Expected layout to be a `list` or `str` but got: f{value}")
+        raise ValueError(
+            f"Expected layout to be a `list` or `str` but got {type(value)}"
+        )
 
 
 class Template(BaseModel):
-    size: Vec3 | Literal["auto"] = "auto"
-    anchor: Vec3 = Field(default_factory=lambda: (0, 0, 0))
+    size: Vec3[int] | Literal["auto"] = "auto"
+    anchor: Vec3[int] = Field(default_factory=lambda: Vec3[int](0, 0, 0))
     palette: dict[str, TemplatePaletteEntry] = Field(default_factory=dict)
     layout: TemplateLayout = Field(default_factory=lambda: TemplateLayout(__root__=[]))
 
-    def scan(self, symbol: str) -> Iterable[Vec3]:
+    def scan(self, symbol: str) -> Iterable[Vec3[int]]:
         """Scan over the layout, looking for a particular symbol."""
         for y, floor in enumerate(self.layout.__root__):
             for x, row in enumerate(floor):
-                yield from ((x, y, z) for z, s in enumerate(row) if s == symbol)
+                yield from (
+                    Vec3[int](x, y, z) for z, s in enumerate(row) if s == symbol
+                )
 
     def to_block_map(self, ctx: Context) -> BlockMap:
         # Create a new block map to hold the final state.
