@@ -23,6 +23,7 @@ class TemplatePaletteEntry(NormalizableModel):
             "BlockTemplatePaletteEntry",
             "BlockProviderTemplatePaletteEntry",
             "TemplateTemplatePaletteEntry",
+            "StructureTemplatePaletteEntry",
         ],
         Field(discriminator="type"),
     ]
@@ -97,6 +98,21 @@ class TemplateTemplatePaletteEntry(BaseModel):
         # Merge the converted child block map into the parent block map.
         child_offset = position - self.offset - child_template.anchor
         block_map.merge(child_block_map, child_offset)
+
+
+class StructureTemplatePaletteEntry(BaseModel):
+    type: Literal["structure"]
+
+    structure: str
+    offset: Vec3[int] = Field(default_factory=lambda: Vec3[int](0, 0, 0))
+
+    def merge(self, ctx: Context, block_map: BlockMap, position: Vec3[int]):
+        structure = ctx.data.structures.get(self.structure)
+        if not structure:
+            raise KeyError(f"No such structure {self.structure}")
+        structure_block_map = BlockMap.from_structure(structure)
+        structure_offset = position - self.offset
+        block_map.merge(structure_block_map, structure_offset)
 
 
 class TemplateLayout(BaseModel):

@@ -1,0 +1,31 @@
+palette:
+  x: minecraft:diamond_block
+  B:
+    type: block
+    block:
+      name: minecraft:dropper
+      state:
+        facing: down
+      data:
+        CustomName: '"BOTTOM"'
+  T:
+    type: block
+    block:
+      name: minecraft:dropper
+      state:
+        facing: up
+      data:
+        CustomName: '"TOP"'
+
+layout: |
+  xxx
+  xTx
+  xxx
+
+  xxx
+  xxx
+  xxx
+
+  xxx
+  xBx
+  xxx

@@ -62,3 +62,7 @@ class Block(NormalizableModel):
     def with_state(self, **states: Any) -> "Block":
         """Return a new block with its own state."""
         return self.copy(update=dict(state=BlockState(__root__=states)))
+
+    def with_data(self, data: NbtCompound) -> "Block":
+        """Return a new block with its own data."""
+        return self.copy(update=dict(data=data))

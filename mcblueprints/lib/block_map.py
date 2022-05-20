@@ -1,15 +1,19 @@
 import string
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import ClassVar, DefaultDict, Iterable, Iterator, Literal, Optional
+from typing import Any, ClassVar, DefaultDict, Iterable, Iterator, Literal, Optional
+
+from beet import Structure
 
 from mcblueprints.lib.block import Block
+from mcblueprints.lib.block_state import BlockState
 from mcblueprints.lib.structure_data import (
     StructureBlockEntry,
     StructureData,
     StructurePaletteEntry,
 )
 from mcblueprints.lib.vec import Vec3
+from mcblueprints.utils.nbt import NbtCompound
 
 __all__ = ["BlockMap"]
 
@@ -22,6 +26,43 @@ class BlockMap:
     block_map: DefaultDict[int, DefaultDict[int, dict[int, Block]]]
 
     SYMBOLS: ClassVar[str] = string.digits + string.ascii_letters
+
+    @classmethod
+    def from_structure(cls, structure: Structure) -> "BlockMap":
+        size_nbt: Any = structure.data["size"]
+        size = Vec3[int](int(size_nbt[0]), int(size_nbt[1]), int(size_nbt[2]))
+        block_map = BlockMap(size=size)
+
+        palette_nbt: list[dict[str, Any]] = structure.data["palette"]
+        blocks_nbt: list[dict[str, Any]] = structure.data["blocks"]
+        cached_blocks: dict[int, Block] = {}
+        for block_entry_nbt in blocks_nbt:
+            pos_nbt: tuple[Any, ...] = block_entry_nbt["pos"]
+            pos = Vec3[int](int(pos_nbt[0]), int(pos_nbt[1]), int(pos_nbt[2]))
+            palette_idx = int(block_entry_nbt["state"])
+
+            cached_block = cached_blocks.get(palette_idx)
+            if not cached_block:
+                palette_entry_nbt = palette_nbt[palette_idx]
+                block_name = str(palette_entry_nbt["Name"])
+                block_state: Optional[BlockState] = None
+                properties_nbt: Optional[dict[str, Any]] = palette_entry_nbt.get(
+                    "Properties"
+                )
+                if properties_nbt:
+                    block_state = BlockState()
+                    for key_nbt, value_nbt in properties_nbt.items():
+                        block_state[str(key_nbt)] = str(value_nbt)
+                cached_block = Block(name=block_name, state=block_state)
+                cached_blocks[palette_idx] = cached_block
+
+            block_data: Optional[NbtCompound] = block_entry_nbt.get("nbt")
+            if block_data:
+                block_map[pos] = cached_block.with_data(block_data)
+            else:
+                block_map[pos] = cached_block
+
+        return block_map
 
     def __init__(self, size: Vec3[int] | Literal["auto"]):
         self.size = size

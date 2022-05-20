@@ -1,0 +1,13 @@
+palette:
+  o: minecraft:redstone_block
+  x:
+    type: structure
+    structure: demo:cube
+    offset: [1, 1, 1]
+
+layout: |
+  x...x
+  .....
+  ..o..
+  .....
+  x...x
